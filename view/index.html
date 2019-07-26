@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pictionary!</title>
+
+</head>
+<style>
+    .overlay {
+        /*position: absolute;
+        height: 100%;
+        width: 100%;
+        background-color: #000000;
+        color: white;
+        z-index: 1;
+        */
+    }
+
+    .body {
+        z-index: 0;
+    }
+
+    .canvas {
+        cursor: crosshair;
+    }
+
+    .brush {
+        background: url('../brush.png');
+        background-size: 40px;
+        background-repeat: no-repeat;
+        height: 45px;
+        width: 45px;
+        position: absolute;
+        left: 310px;
+    }
+
+    .fill {
+        background: url('../paintcan.png');
+        background-size: 40px;
+        background-repeat: no-repeat;
+        height: 45px;
+        width: 45px;
+        position: absolute;
+        left: 360px;
+    }
+
+    .clear {
+        background: url('../trashcan.jpg');
+        background-size: 40px;
+        background-repeat: no-repeat;
+        height: 45px;
+        width: 45px;
+        position: absolute;
+        left: 410px;
+    }
+
+    .parent {
+        position: relative;
+    }
+
+    #slider {
+        position: absolute;
+        top: 20px;
+        left: 40px;
+    }
+
+    #preview {
+        position: absolute;
+        top: 50px;
+    }
+
+    .colorbox {
+        position: relative;
+        border-style: solid;
+        top: 50px;
+        left: 240px;
+        width: 210px;
+    }
+
+    .innercolor {
+        position: static;
+        border-style: inset;
+        width: 30px;
+        height: 30px;
+        padding: 0px;
+    }
+</style>
+
+<body onload="drawPreview();">
+    <div>
+        <h1 style="display: inline;">Pictionary!</h1>
+        <a href="changelog.html">changelog</a>
+    </div>
+    <div id="debug"></div>
+    <canvas id="canvas" class="canvas" width="450" height="600" style="border-style:solid"></canvas>
+
+    <div class="parent">
+        <canvas id="preview" width="200" height="200" style="border-style:solid;"></canvas>
+        <input id="slider" type="range" min="1" max="100" value="15" oninput="updateRadius();">
+        <button id="brush" class="brush" onclick="changeBrush()"></button>
+        <button id="fill" class="fill" onclick="changeFill()"></button>
+        <button id="clear" class="clear" onclick="clearBoard()"></button>
+        <div class="colorbox">
+            <table style="border-collapse: collapse;">
+                <button class="innercolor" style="background:#ff0000" onclick="changeColor('#ff0000')"></button>
+                <button class="innercolor" style="background:#ffa500" onclick="changeColor('#ffa500')"></button>
+                <button class="innercolor" style="background:#ffff00" onclick="changeColor('#ffff00')"></button>
+                <button class="innercolor" style="background:#008000" onclick="changeColor('#008000')"></button>
+                <button class="innercolor" style="background:#0000ff" onclick="changeColor('#0000ff')"></button>
+                <button class="innercolor" style="background:#4b0082" onclick="changeColor('#4b0082')"></button>
+                <button class="innercolor" style="background:#ee82ee" onclick="changeColor('#ee82ee')"></button>
+                <button class="innercolor" style="background:#000000" onclick="changeColor('#000000')"></button>
+                <button class="innercolor" style="background:#ffffff" onclick="changeColor('#ffffff')"></button>
+                <button class="innercolor" style="background:#a52a2a" onclick="changeColor('#a52a2a')"></button>
+                <button class="innercolor" style="background:#00fafa" onclick="changeColor('#00fafa')"></button>
+                <button class="innercolor" style="background:#ff4766" onclick="changeColor('#ff4766')"></button>
+                <button class="innercolor" style="background:#808080" onclick="changeColor('#808080')"></button>
+                <button class="innercolor" style="background:#c0c0c0" onclick="changeColor('#c0c0c0')"></button>
+            </table>
+
+        </div>
+    </div>
+    <script src="server.js"></script>
+    <script src="index.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
