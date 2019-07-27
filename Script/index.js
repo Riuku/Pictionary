@@ -7,9 +7,37 @@ var activeDraw = false;
 var radius = 15;
 var brushColor = "#000000"; //black
 var canvas = document.getElementById('canvas');
-var ctx = canvas.getContext("2d");
+var ctx = canvas.getContext("2d"); //webGl
 var previewCanvas = document.getElementById('preview');
 var brushMode = 0; //0 = brush 1 = fill
+
+function init()
+{
+    drawPreview();
+    initCanvas();
+    promptForName();
+}
+
+// Get the modal
+var name_prompt_modal = document.getElementById("name_prompt_modal");
+var name_prompt = document.getElementById("name_prompt");
+function promptForName()
+{
+    name_prompt_modal.style.display = "block";
+}
+
+function Play()
+{
+    if (name_prompt.value != "")
+    {
+        name_prompt_modal.style.display = "none";
+        socket.emit("server msg", "conn:" + name_prompt.value);
+        socket.nickname = name_prompt.value;
+        console.log("play button socketID: " + socket.id);
+
+    }
+}
+
 function draw(event) {
     if (event.which == 1)
         activeDraw = true;
@@ -133,8 +161,6 @@ function drawPreview()
 
         
     }
-
-    initCanvas();
 }
 function mouseRelease(event)
 {
@@ -158,9 +184,13 @@ function changeFill() {
 }
 
 
-function clearBoard()
+function clearBoard(server_call)
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);   
+    if (!server_call)
+        socket.emit('server msg', 'clr_cvs:');
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
 }
 
 function updateRadius(event)
@@ -178,6 +208,31 @@ function changeColor(color)
 function send_draw_updates()
 {
   var rect = canvas.getBoundingClientRect();
-  var pixelArr = ctx.getImageData(0,0, rect.right, rect.bottom).data;
+  var theDataURL = canvas.toDataURL();
+  socket.emit('server msg', "imgData:" + theDataURL);
 
 }
+/* #region undo_handler */
+var ctrlHeld = false;
+window.addEventListener('keydown', (e) => {
+    if (e.code == "ControlLeft" || e.code == "ControlRight")
+    {
+        ctrlHeld = true;
+    }
+    if (e.code == "KeyZ" && ctrlHeld)
+        undo();
+})
+
+window.addEventListener('keyup', (e)=>{
+    if (e.code == "ControlLeft" || e.code == "ControlRight")
+    {
+        ctrlHeld = false;
+    }
+    
+})
+
+function undo()
+{
+    console.log("undo!");
+}
+/* #endregion */

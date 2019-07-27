@@ -9,14 +9,85 @@
 
 </head>
 <style>
-    .overlay {
-        /*position: absolute;
-        height: 100%;
+    /* The Modal (background) */
+    .modal {
+        display: none;
+        /* Hidden by default */
+        position: fixed;
+        /* Stay in place */
+        z-index: 3;
+        /* Sit on top */
+        padding-top: 100px;
+        /* Location of the box */
+        left: 0;
+        top: 0;
         width: 100%;
-        background-color: #000000;
-        color: white;
+        /* Full width */
+        height: 100%;
+        /* Full height */
+        overflow: auto;
+        /* Enable scroll if needed */
+        background-color: rgb(0, 0, 0);
+        /* Fallback color */
+        background-color: rgba(0, 0, 0, 0.4);
+        /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 20%;
+    }
+
+    /* The sidebar menu */
+    .sidebar_window,
+    .sidebar {
+        height: 80%;
+        /* Full-height: remove this if you want "auto" height */
+        width: 30%;
+        /* Set the width of the sidebar */
+        position: fixed;
+        /* Fixed Sidebar (stay in place on scroll) */
         z-index: 1;
-        */
+        /* Stay on top */
+        top: 0;
+        /* Stay at the top */
+        right: 0;
+        background-color: grey;
+        /* Black */
+        overflow-x: hidden;
+        /* Disable horizontal scroll */
+        padding-top: 0px;
+        overflow-y: hidden;
+        margin: 20px;
+    }
+
+    .sidebar_window input {
+        position: absolute;
+        bottom: 0px;
+        width: 100%;
+        z-index: 2;
+    }
+
+    .chatWindow {
+        height: 97%;
+        overflow-y: auto;
+    }
+
+    .chatWindow p {
+        margin: 0px;
+        word-wrap: break-word;
+    }
+
+    .chat_msg_0 {
+        background: #a1a1a1;
+    }
+
+    .chat_msg_1 {
+        background: #7d7d7d;
     }
 
     .body {
@@ -89,10 +160,22 @@
     }
 </style>
 
-<body onload="drawPreview();">
+<body onload="init()">
+    <!-- The Modal -->
+    <div id="name_prompt_modal" class="modal">
+
+        <!-- Modal content -->
+        <div class="modal-content">
+            <p>Please Enter your name:</p>
+            <input id="name_prompt" type="text" maxlength="25">
+            <button id="play", onclick="Play();">Play</button>
+        </div>
+
+    </div>
+
     <div>
         <h1 style="display: inline;">Pictionary!</h1>
-        <a href="changelog.html">changelog</a>
+        <a href="/view/changelog.html">changelog</a>
     </div>
     <div id="debug"></div>
     <canvas id="canvas" class="canvas" width="450" height="600" style="border-style:solid"></canvas>
@@ -102,7 +185,7 @@
         <input id="slider" type="range" min="1" max="100" value="15" oninput="updateRadius();">
         <button id="brush" class="brush" onclick="changeBrush()"></button>
         <button id="fill" class="fill" onclick="changeFill()"></button>
-        <button id="clear" class="clear" onclick="clearBoard()"></button>
+        <button id="clear" class="clear" onclick="clearBoard(false)"></button>
         <div class="colorbox">
             <table style="border-collapse: collapse;">
                 <button class="innercolor" style="background:#ff0000" onclick="changeColor('#ff0000')"></button>
@@ -120,12 +203,19 @@
                 <button class="innercolor" style="background:#808080" onclick="changeColor('#808080')"></button>
                 <button class="innercolor" style="background:#c0c0c0" onclick="changeColor('#c0c0c0')"></button>
             </table>
-
         </div>
     </div>
-    <script src="server.js"></script>
-    <script src="index.js"></script>
+    <div class="sidebar_window">
+        <div class="sidebar">
+            <div id="chatWindow" class="chatWindow"></div>
+        </div>
+        <input id="chatbox" class="chatbox" type="text" placeholder="Type message..." maxlength="50">
+    </div>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
+    <script src="index.js"></script>
+    <script src="chat.js"></script>
 </body>
 
 </html>
