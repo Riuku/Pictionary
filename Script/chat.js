@@ -1,8 +1,6 @@
 var socket = io.connect("http://73.98.154.126:8080");
 var chatbox = document.getElementById('chatbox');
 var chatWindow = document.getElementById('chatWindow');
-
-console.log("chat.js socketID: " + socket.id);
 var toggle_bg = 0;
 
 chatbox.addEventListener('keydown', () =>
@@ -26,12 +24,17 @@ function receiveText(msg, user, property)
     }
     else if (property == 'connect')
     {
-        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#006400;'>'" + user + "' has connected!" + "</p>"
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#006400;'>'" + user + "' has joined!" + "</p>"
     }
     else if (property == 'disconnect')
     {
-        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#B80000;'>'" + user + "' has disconnected!" + "</p>"
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#B80000;'>'" + user + "' has left!" + "</p>"
     }
+    else if (property == 'drawing')
+    {
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#ffd500;'>'" + user + "' is drawing!" + "</p>"
+    }
+
     var cw = document.querySelector("#chatWindow");
     var lastChatHeight = cw.querySelectorAll("p");
     chatWindow.scrollTop += lastChatHeight[lastChatHeight.length-1].clientHeight;

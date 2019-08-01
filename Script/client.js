@@ -5,12 +5,10 @@ socket.on('disconnect', function()
 })
 
 socket.on('broadcast', function (json) {
-    console.log("recieved broadcast msg: '" + json + "'");
+    console.log("recieved broadcast msg of type: '" + json.type + "'");
     if (json.type == "imgData")
     {
-        console.log("reconstructing imgdata...")
         var img=new Image();
-        //console.log("json.data: " + json.data);
         img.onload = ()=>{
             ctx.drawImage(img, 0, 0);
           };

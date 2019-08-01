@@ -10,8 +10,8 @@ const router = express.Router();
 var app = express();
 var http = require("http").Server(app);
 var io = require('socket.io')(http);
-
-
+var game_state = "offline";
+var current_word = "";
 var words;
 fs.readFile('word_list.txt', 'utf-8', (err, data) => {
   if (err) throw err;
@@ -70,8 +70,9 @@ io.on('connection', function (socket) {
       var msg_usr = rest.split('\0');
       broadcast_chat(msg_usr[0], msg_usr[1], msg_usr[2]);
     }
-    else if (decoded[0] == 'start') {
-      broadcast_start();
+    else if (decoded[0] == 'req_gs')
+    {
+
     }
   });
 
@@ -84,21 +85,28 @@ http.listen(PORT, function () {
 function connect_client(io, socket, name) {
   clients++;
   socket.nickname = name;
-  client_sockets[client_id] = socket.id;
+  client_sockets.push(socket);
   io.emit('broadcast', { type: "CS", description: clients + ' client(s) connected!' });
   broadcast_chat('', name, 'connect');
   console.log("userID, name: [" + client_id + ", " + name + "] connected!");
   client_id++;
+  display_client_list();
+  //2 users needed to play a game!
+  if (clients >= 2)
+  {
+    broadcast_start();
+    //setInterval(broadcast_start, 60000); //start new round every 60 seconds.
+  }
 }
 
 function disconnect_client(client_id, io, socket) {
-
-  client_sockets[client_id] = null;
+  clients--;
+  client_sockets = arrayRemove(client_sockets, socket);
   io.emit('broadcast', { type: "CS", description: clients + ' client(s) connected!' });
   broadcast_chat('', socket.nickname, 'disconnect');
-  clients--;
+  
   console.log(client_id + " disconnected!");
-  console.log("client array: " + client_sockets);
+  display_client_list();
 }
 
 function broadcast_image(imgData) {
@@ -131,6 +139,24 @@ function broadcast_start() {
   if (drawer > client_sockets.length - 1)
     drawer = 0;
   
-  console.log("broadcasting init!");
-  io.emit('broadcast', { type: 'init', words: selectedWords, drawer: drawer_sock});
+  console.log("Start of round! " + drawer_sock.nickname + " is the current drawer!");
+  io.emit('broadcast', { type: 'init', words: selectedWords, drawer: drawer_sock.id});
+}
+
+function display_client_list()
+{
+  process.stdout.write("(" + clients + ") clients connected: [ ")
+  for (var i = 0; i < client_sockets.length; i++)
+  {
+    process.stdout.write("(" + client_sockets[i].id + ", " + client_sockets[i].nickname + ")");
+  }
+  process.stdout.write("]\n");
+}
+
+function arrayRemove(arr, value) {
+
+  return arr.filter(function(ele){
+      return ele != value;
+  });
+
 }
