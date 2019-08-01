@@ -33,8 +33,7 @@ function Play()
         name_prompt_modal.style.display = "none";
         socket.nickname = name_prompt.value;
         socket.emit("server msg", "conn:" + name_prompt.value);
-        
-        console.log("play button socketID: " + socket.id);
+        game_start();
 
     }
 }

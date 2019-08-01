@@ -23,6 +23,8 @@ socket.on('broadcast', function (json) {
         clearBoard(true);
     else if (json.type == 'chat')
         receiveText(json.msg, json.usr, json.property);
+    else if (json.type == 'init')
+        round_start(json.words, json.drawer);
 });
 
 window.addEventListener('beforeunload', function(event) {
