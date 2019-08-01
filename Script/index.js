@@ -31,8 +31,9 @@ function Play()
     if (name_prompt.value != "")
     {
         name_prompt_modal.style.display = "none";
-        socket.emit("server msg", "conn:" + name_prompt.value);
         socket.nickname = name_prompt.value;
+        socket.emit("server msg", "conn:" + name_prompt.value);
+        
         console.log("play button socketID: " + socket.id);
 
     }

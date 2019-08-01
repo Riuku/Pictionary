@@ -22,7 +22,7 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'clr_cvs')
         clearBoard(true);
     else if (json.type == 'chat')
-        receiveText(json.msg, json.usr);
+        receiveText(json.msg, json.usr, json.property);
 });
 
 window.addEventListener('beforeunload', function(event) {
