@@ -1,4 +1,4 @@
-var socket = io.connect("http://localhost:8080");
+var socket = io.connect("http://73.98.154.126:8080");
 socket.on('disconnect', function()
 {
     dconn();
@@ -17,10 +17,12 @@ socket.on('broadcast', function (json) {
         img.src=json.data;
         
     }
-    else if (json.type == "CS")
+    else if (json.type == 'CS')
         document.getElementById('debug').innerHTML = json.description;
     else if (json.type == 'clr_cvs')
         clearBoard(true);
+    else if (json.type == 'chat')
+        receiveText(json.msg, json.usr);
 });
 
 window.addEventListener('beforeunload', function(event) {

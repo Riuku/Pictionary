@@ -1,3 +1,4 @@
+var socket = io.connect("http://73.98.154.126:8080");
 var chatbox = document.getElementById('chatbox');
 var chatWindow = document.getElementById('chatWindow');
 
@@ -12,7 +13,12 @@ chatbox.addEventListener('keydown', () =>
 
 function sendText(msg, user)
 {
+    socket.emit('server msg', 'chat:' + msg + '\0' + user);
+    chatbox.value = "";
+}
 
+function receiveText(msg, user)
+{
     chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "'>" + user + ": " + msg + "</p>"
     document.getElementById('chatWindow').scrollTop = 1000;
 
@@ -21,5 +27,5 @@ function sendText(msg, user)
     else
         toggle_bg = 0;
     
-    chatbox.value = "";
+    
 }

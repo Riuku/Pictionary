@@ -61,6 +61,11 @@ io.on('connection', function(socket) {
     }
     else if (decoded[0] == "clr_cvs")
       send_clear();
+    else if (decoded[0] == 'chat')
+    {
+      var msg_usr = decoded[1].split('\0');
+      broadcast_chat(msg_usr[0], msg_usr[1]);
+    }
   });
 
 });
@@ -97,4 +102,9 @@ function broadcast_image(imgData)
 function send_clear()
 {
   io.emit('broadcast', {type: 'clr_cvs'});
+}
+
+function broadcast_chat(mesg, user)
+{
+  io.emit('broadcast', {type: 'chat', msg: mesg, usr: user});
 }
