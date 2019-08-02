@@ -53,10 +53,9 @@ app.use('/', router);
 io.on('connection', function (socket) {
   console.log("a user connected: [" + socket.id + "]")
   socket.on('server msg', function (msg) {
-    //console.log("recieved message: '" + msg + "'")
     var decoded = msg.split(':', 1);
     var rest = msg.substring(decoded[0].length + 1);
-    //console.log("server msg type: " + decoded[0]);
+    console.log("server msg type: " + decoded[0]);
     if (decoded[0] == "conn")
       connect_client(io, socket, rest);
     else if (decoded[0] == "dconn")
@@ -70,9 +69,9 @@ io.on('connection', function (socket) {
       var msg_usr = rest.split('\0');
       broadcast_chat(msg_usr[0], msg_usr[1], msg_usr[2]);
     }
-    else if (decoded[0] == 'req_gs')
+    else if (decoded[0] == 'disp_blank')
     {
-
+      broadcast_display_blanks(rest);
     }
   });
 
@@ -159,4 +158,9 @@ function arrayRemove(arr, value) {
       return ele != value;
   });
 
+}
+
+function broadcast_display_blanks(text)
+{
+  io.emit('broadcast', { type: 'disp_blank', text: text });
 }

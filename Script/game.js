@@ -9,13 +9,20 @@ function round_start(words, drawer)
         socket.emit('server msg', 'chat:' + '\0' + socket.nickname + '\0' + 'drawing');
         
         var container = document.querySelector("#word_prompt_modal");
-        container.querySelector("div.modal-content").innerHTML =
-        '<p>Select a word:</p>' +
-            '<input type=\'button\' value=\'' + words[0] + '\' onclick=set_round_word(' + words[0] + ')></input>' +
-            '<input type=\'button\' value=\'' + words[1] + '\' onclick=set_round_word(' + words[1] + ')></input>' +
-            '<input type=\'button\' value=\'' + words[2] + '\' onclick=set_round_word(' + words[2] + ')></input>';
+        var modal_content = container.querySelector("div.modal-content")
 
+        var paragraph = document.createElement('p');
+        paragraph.appendChild(document.createTextNode("Select a word:"));
+        modal_content.appendChild(paragraph);
         word_prompt_modal.style.display = "block";
+        words.forEach((element)=>{
+            var button_input = document.createElement('input');
+            button_input.setAttribute('type', 'button');
+            button_input.value = element;
+            button_input.onclick = function() {set_round_word(element)};
+            modal_content.appendChild(button_input);
+        });
+        
         
     }
     else
@@ -27,14 +34,19 @@ function round_start(words, drawer)
 var word_panel = document.getElementById("word_panel");
 function set_round_word(word)
 {
-    alert("chosen word: " + word);
+    console.log("chosen word: " + word);
+    word_prompt_modal.style.display = "none";
     var display_str = "";
-    for (var i = 0; i < word.length; i++)
+    for (var i = 0; i < word.length-1; i++)
     {
         display_str += "_ ";
     }
-    console.log("word_panel.innerHTML= " + display_str);
-    word_panel.innerHTML = display_str;
+    socket.emit('server msg', 'disp_blank:' + display_str);
 
-    word_prompt_modal.style.display = "none";
+    
+}
+
+function display_blanks(display_str)
+{
+    word_panel.innerHTML = display_str;
 }
