@@ -41,7 +41,7 @@ function set_round_word(word)
     {
         display_str += "_ ";
     }
-    socket.emit('server msg', 'disp_blank:' + display_str);
+    socket.emit('server msg', 'word_sel:' + display_str + '\0' + word);
 
     
 }

@@ -4,6 +4,20 @@ socket.on('disconnect', function()
     dconn();
 })
 
+socket.on('init', function(json) {
+    if (json.type == 'imgData')
+    {
+        var img=new Image();
+        img.onload = ()=>{
+            ctx.drawImage(img, 0, 0);
+          };
+        img.src=json.data;
+    }
+    else if (json.type == 'disp_blank')
+    {
+        display_blanks(json.text);
+    }
+});
 socket.on('broadcast', function (json) {
     console.log("recieved broadcast msg of type: '" + json.type + "'");
     if (json.type == "imgData")

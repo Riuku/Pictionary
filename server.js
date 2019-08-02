@@ -10,9 +10,13 @@ const router = express.Router();
 var app = express();
 var http = require("http").Server(app);
 var io = require('socket.io')(http);
-var game_state = "offline";
-var current_word = "";
+var current_word = "_0_0_0_0_0_";
+var current_blanks_disp = "";
+var gamestate = "offline";
+var canvas_data;
 var words;
+
+
 fs.readFile('word_list.txt', 'utf-8', (err, data) => {
   if (err) throw err;
 
@@ -55,7 +59,7 @@ io.on('connection', function (socket) {
   socket.on('server msg', function (msg) {
     var decoded = msg.split(':', 1);
     var rest = msg.substring(decoded[0].length + 1);
-    console.log("server msg type: " + decoded[0]);
+    //console.log("server msg type: " + decoded[0]);
     if (decoded[0] == "conn")
       connect_client(io, socket, rest);
     else if (decoded[0] == "dconn")
@@ -69,9 +73,13 @@ io.on('connection', function (socket) {
       var msg_usr = rest.split('\0');
       broadcast_chat(msg_usr[0], msg_usr[1], msg_usr[2]);
     }
-    else if (decoded[0] == 'disp_blank')
+    else if (decoded[0] == 'word_sel')
     {
-      broadcast_display_blanks(rest);
+      var blanks_word = rest.split('\0');
+      current_blanks_disp = blanks_word[0];
+      broadcast_display_blanks(current_blanks_disp);
+      current_word = blanks_word[1];
+      console.log("cw:" + current_word);
     }
   });
 
@@ -91,10 +99,16 @@ function connect_client(io, socket, name) {
   client_id++;
   display_client_list();
   //2 users needed to play a game!
-  if (clients >= 2)
+  if (clients >= 2 && gamestate != "running")
   {
     broadcast_start();
     //setInterval(broadcast_start, 60000); //start new round every 60 seconds.
+  }
+  else if (gamestate == "running")
+  {
+    //late client needs current information
+    //io.to(socket.id).emit('init', {type: "imgData", data: });
+    io.to(socket.id).emit('init', {type: "disp_blank", text: current_blanks_disp});
   }
 }
 
@@ -117,12 +131,20 @@ function send_clear() {
 }
 
 function broadcast_chat(mesg, user, property) {
-  io.emit('broadcast', { type: 'chat', msg: mesg, usr: user, property: property });
+  console.log("msg:" + mesg);
+  if (mesg.trim() === current_word.trim())
+  {
+    io.emit('broadcast', { type: 'chat', msg: "", usr: user, property: 'guessed' });
+  }
+  else
+  {
+    io.emit('broadcast', { type: 'chat', msg: mesg, usr: user, property: property });
+  }
 }
 
 
 function broadcast_start() {
-  
+  gamestate = "running";
   var selectedWords = [];
   for (var i = 0; i < 3;)
   {

@@ -34,6 +34,10 @@ function receiveText(msg, user, property)
     {
         chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#ffd500;'>'" + user + "' is drawing!" + "</p>"
     }
+    else if (property == 'guessed')
+    {
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#BA55D3;'>'" + user + "' guessed the word!" + "</p>"
+    }
 
     var cw = document.querySelector("#chatWindow");
     var lastChatHeight = cw.querySelectorAll("p");
