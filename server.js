@@ -13,7 +13,7 @@ var io = require('socket.io')(http);
 var current_word = "_0_0_0_0_0_";
 var current_blanks_disp = "";
 var gamestate = "offline";
-var canvas_data;
+var canvas_history = [];
 var words;
 
 
