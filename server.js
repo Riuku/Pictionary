@@ -15,6 +15,7 @@ var current_blanks_disp = "";
 var gamestate = "offline";
 var canvas_history = [];
 var words;
+var roundTime = 60000; //60 seconds
 
 
 fs.readFile('word_list.txt', 'utf-8', (err, data) => {
@@ -77,7 +78,7 @@ io.on('connection', function (socket) {
     {
       var blanks_word = rest.split('\0');
       current_blanks_disp = blanks_word[0];
-      broadcast_display_blanks(current_blanks_disp);
+      round_start(current_blanks_disp, roundTime);
       current_word = blanks_word[1];
       console.log("cw:" + current_word);
     }
@@ -190,7 +191,7 @@ function arrayRemove(arr, value) {
 
 }
 
-function broadcast_display_blanks(text)
+function round_start(blanks, time)
 {
-  io.emit('broadcast', { type: 'disp_blank', usr:"", text: text });
+  io.emit('broadcast', { type: 'round_start', usr:"", blanks: blanks, time:time});
 }

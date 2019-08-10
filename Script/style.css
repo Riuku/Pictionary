@@ -84,17 +84,47 @@
 {
     background: grey;
     text-align: center;
-    width: 40%;
+    width: 30%;
     padding: 40px;
-    left: 200px;
     font-size: 200%;
+    position: relative;
+    left: 100px;
 }
+
+.timer_box
+{
+    position: relative;
+}
+
+.timer_bg
+{
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height:70;
+    width:100;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+.timer_disp
+{
+    z-index: 2;
+    position: absolute;
+    top: 30;
+    left: 30;
+    height:35;
+    width:35;
+}
+
 .body {
     z-index: 0;
 }
 
 .canvas {
     cursor: crosshair;
+    left: 100px;
+    position: relative;
 }
 
 .brush {

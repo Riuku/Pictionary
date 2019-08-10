@@ -1,3 +1,5 @@
+var timer_time;
+var timer_handle;
 var socket = io.connect("http://73.98.154.126:8080");
 socket.on('disconnect', function () {
     dconn();
@@ -14,12 +16,6 @@ socket.on('broadcast', function (json) {
             console.log("drawing path");
             srv_drawPath(json.start.x, json.start.y, json.end.x, json.end.y, json.color, json.width);
         }
-        /*var img=new Image();
-        img.onload = ()=>{
-            ctx.drawImage(img, 0, 0);
-          };
-        img.src=json.data;
-        */
 
     }
     else if (json.type == 'CS')
@@ -30,9 +26,14 @@ socket.on('broadcast', function (json) {
         receiveText(json.msg, json.usr, json.property);
     else if (json.type == 'init')
         round_start(json.words, json.drawer);
-    else if (json.type == 'disp_blank') {
-        if (socket.id == json.usr || json.usr == "")
-            display_blanks(json.text);
+    else if (json.type == 'round_start') {
+        if (socket.id == json.usr || json.usr == "") {
+            display_blanks(json.blanks);
+            timer_time = json.time / 1000; //seconds
+            update_timer();
+            timer_handle = setInterval(update_timer, 1000);
+            setTimeout(round_timer_end, json.time);
+        }
     }
     else if (json.type == 'draw_hist') {
         if (socket.id == json.usr)
@@ -70,15 +71,33 @@ function srv_drawPath(x1, y1, x2, y2, color, width) {
 }
 
 function update_draw_history(history) {
-    for (var i = 0; i < history.length; i++)
-    {
+    for (var i = 0; i < history.length; i++) {
         var piece = history[i];
-        if (piece.img_type == "point")
-        {
+        if (piece.img_type == "point") {
             srv_drawPoint(piece.start.x, piece.start.y, piece.color, piece.width);
-        } else if (piece.img_type == "path")
-        {
+        } else if (piece.img_type == "path") {
             srv_drawPath(piece.start.x, piece.start.y, piece.end.x, piece.end.y, piece.color, piece.width);
         }
     }
 }
+
+/* #region TIMER*/
+var timer_disp_canvas = document.getElementById("timer_disp");
+
+var time_ctx = timer_disp_canvas.getContext('2d');
+time_ctx.font = "170px Comic Sans MS";
+time_ctx.fillStyle = "red";
+time_ctx.textAlign = "center";
+
+function update_timer() {
+    console.log("current timer: " + timer_time);
+    time_ctx.clearRect(0,0, timer_disp_canvas.width, timer_disp_canvas.height);
+    time_ctx.fillText(timer_time, 160, 160);
+    timer_time -= 1;
+}
+
+function round_timer_end() {
+    console.log("TIME END");
+    clearInterval(timer_handle);
+}
+/* #endregion TIMER*/
