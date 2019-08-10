@@ -12,7 +12,9 @@ function init() {
 
     //default line width 15 pixels;
     ctx.lineWidth = 15;
-    ctx.mitterLimit = 0;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
     // Attach the events that you need for drawing.
     canvas.onmousedown = startDraw;
     canvas.onmouseup = mouseRelease;
@@ -40,8 +42,8 @@ function Play() {
 
     }
 }
-var previousPoint;
-var startPoint;
+var previousPoint = {x:-1,y:-1};
+var startPoint = {x:-1,y:-1};
 function startDraw(e) {
     if (e.which == 1) //detects left click on chrome browsers
     {
@@ -55,11 +57,8 @@ function startDraw(e) {
         var y = e.pageY - canvas.offsetTop;
         ctx.moveTo(x, y);
 
-        //log start coordinate and compare with end to determine if point or line.
-        startPoint = {x:x, y:y};
-
         //store previous point for sending network updates
-        previousPoint = { x: x, y: y };
+        previousPoint = startPoint = {x: x, y: y};
     }
     
 }
@@ -78,7 +77,8 @@ function draw(e) {
                 ctx.stroke();
     
     
-                send_draw_updates();
+                send_draw_updates("path", previousPoint, {x:x, y:y}, brushColor, ctx.lineWidth);
+                previousPoint = {x:x, y:y};
             }
     
     
@@ -166,13 +166,15 @@ function drawPreview() {
         var p_ctx = previewCanvas.getContext("2d");
         p_ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
 
-        //p_ctx.strokeStyle = "#000000";
-        //var border = new Path2D();
-        //border.arc(previewCanvas.width / 2, previewCanvas.height / 2, lineWidth, 0, 2 * Math.PI);
-        //p_ctx.fill(border);
+        p_ctx.fillStyle = "#000000";
+        var border = new Path2D();
+        border.arc(previewCanvas.width / 2, previewCanvas.height / 2, ctx.lineWidth / 2, 0, 2 * Math.PI);
+        p_ctx.fill(border);
 
         p_ctx.fillStyle = brushColor;
-        p_ctx.fillRect(previewCanvas.width/2 - ctx.lineWidth/2, previewCanvas.height / 2 - ctx.lineWidth/2, ctx.lineWidth, ctx.lineWidth);
+        var circle = new Path2D();
+        circle.arc(previewCanvas.width / 2, previewCanvas.height / 2, ctx.lineWidth / 2, 0, 2 * Math.PI);
+        p_ctx.fill(circle);
 
 
     }
@@ -184,11 +186,13 @@ function mouseRelease(e) {
     var y = e.pageY - canvas.offsetTop;
     var endPoint = {x:x, y:y};
 
-    if (startPoint.x == endPoint.x && startPoint.y == endPoint.y)
+    if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) //we know that this isnt the result of a path, but a single click.
     {
         ctx.fillStyle = brushColor;
-        ctx.fillRect(x - ctx.lineWidth / 2, y - ctx.lineWidth / 2, ctx.lineWidth, ctx.lineWidth);
-        send_draw_updates();
+        var circle = new Path2D();
+        circle.arc(x,y, ctx.lineWidth / 2, 0, 2 * Math.PI);
+        ctx.fill(circle);
+        send_draw_updates("point", startPoint, {x:x, y:y}, brushColor, ctx.lineWidth);
     }
 
 }
@@ -198,15 +202,6 @@ function initCanvas() {
     var pixelArr = ctx.getImageData(0, 0, rect.right, rect.bottom).data;
     pixelArr.fill(255, 0, 10000);
 }
-function changeBrush() {
-    brushMode = 0;
-    //document.getElementById("canvas").style.cursor = "url('../brush_32.png')";
-}
-
-function changeFill() {
-    brushMode = 1;
-    //document.getElementById("canvas").style.cursor = "url('../paintcan_32.png')";
-}
 
 
 function clearBoard(server_call) {
@@ -214,6 +209,7 @@ function clearBoard(server_call) {
         socket.emit('server msg', 'clr_cvs:');
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
 
 }
 
@@ -227,9 +223,9 @@ function changeColor(color) {
     drawPreview();
 }
 
-function send_draw_updates() {
-    var theDataURL = canvas.toDataURL();
-    socket.emit('server msg', "imgData:" + theDataURL);
+function send_draw_updates(type, start, end, color, width) {
+    var json = {img_type:type, start:start, end:end, color:color, width:width}
+    socket.emit('server msg', "imgData:" + JSON.stringify(json));
 
 }
 /* #region undo_handler */
