@@ -35,37 +35,41 @@
 }
 
 /* The sidebar menu */
-.sidebar_window,
-.sidebar {
-    height: 80%;
-    /* Full-height: remove this if you want "auto" height */
-    width: 30%;
-    /* Set the width of the sidebar */
-    position: fixed;
-    /* Fixed Sidebar (stay in place on scroll) */
-    z-index: 1;
-    /* Stay on top */
-    top: 0;
-    /* Stay at the top */
-    right: 0;
-    background-color: grey;
-    /* Black */
-    overflow-x: hidden;
-    /* Disable horizontal scroll */
-    padding-top: 0px;
-    overflow-y: hidden;
-    margin: 20px;
+.sidebar_cont
+{
+    position: relative;
+    margin-left: 8px;
+    width: 340px;
+    min-width: 340px;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-.sidebar_window input {
-    position: absolute;
-    bottom: 0px;
+.sidebar_window
+{
+    height: 64px;
+    padding: 4px;
+    flex: 1 0 auto;
+    border-radius: 2px;
+
+}
+
+.sidebar{
+    box-sizing: border-box;
+    height: 100%;
+    background: grey;
+}
+
+.sidebar input {
+    height: 34px;
     width: 100%;
-    z-index: 2;
 }
 
 .chatWindow {
-    height: 97%;
+    
+    height: calc(100% - 34px);
     overflow-y: auto;
 }
 
@@ -127,24 +131,72 @@
 }
 .mid_panel
 {
-    position: relative;
+    display: flex;
+    justify-content: center;
 }
+
+/*PLAYER PANEL*/
 .player_panel
 {
-    position: absolute;
-    border-style:solid;
-    top: 0;
-    left: 0;
+	border-style:solid;
+	display: flex;
+    flex-direction: column;
+    align-content: flex-start;
     width: 200px;
-    height: 60px;
-
 }
-
-/*.player
+.player
 {
-    
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
-*/
+.rank
+{
+	width: 34px;
+    flex: 0 0 auto;
+    color: #000;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 30px;
+    text-align: center;
+}
+.info
+{
+	flex: 1 1 auto;
+    max-width: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+    color: #000;
+    text-align: center;
+}
+.name
+{
+	flex: 1 1 auto;
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.score
+{
+    flex: 1 1 auto;
+    font-size: 14px;
+}
+
+.avatar
+{
+	position: relative;
+    flex: 0 0 auto;
+    height: 48px;
+    width: 48px;
+}
+/*END PLAYER PANEL*/
 
 .body {
     z-index: 0;
@@ -152,8 +204,10 @@
 
 .canvas {
     cursor: crosshair;
-    left: 220px;
+    left: 5;
     position: relative;
+    margin: 0;
+    line-height: 0;
 }
 
 .brush {

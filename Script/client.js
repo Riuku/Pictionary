@@ -112,7 +112,11 @@ var player_panel = document.getElementById("player_panel");
 function playerJoin(name, id)
 {
     console.log("adding player[" + name + ", " + id +  "] to player panel");
-    player_panel.innerHTML += "<div id=\"" + id + "\" class=\"player\">" + name +"</div>"
+    player_panel.innerHTML += 
+        "<div id=\"" + id + "\" class=\"player\">\
+        <div class=\"rank\">#1</div><div class=\"info\">\
+        <div class=\"name\">" + name + "</div>\
+        <div class=\"score\">Points: 0</div></div></div>";
 }
 
 function playerLeft(name, id)

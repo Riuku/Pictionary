@@ -51,17 +51,18 @@ var startPoint = {x:-1,y:-1};
 function startDraw(e) {
     if (e.which == 1 || activeDraw) //detects left click on chrome browsers
     {
-        //console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
+        console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
         activeDraw = true;
 
         // Create a new path (with the current stroke color and stroke thickness).
         ctx.beginPath();
     
         // Put the pen down where the mouse is positioned.
-        var x = e.pageX - rect.left;
-        var y = e.pageY - rect.top;
-        ctx.moveTo(x, y);
+        var x = e.offsetX;
+        var y = e.offsetY;
 
+        ctx.moveTo(x, y);
+    console.log("canvas position: (x,y): (" + x + ", " + y + ")");
         //store previous point for sending network updates
         previousPoint = startPoint = {x: x, y: y};
     }
@@ -74,12 +75,12 @@ function draw(e) {
         
         ctx.strokeStyle = brushColor;
         
-        var x = e.pageX - rect.left;
-        var y = e.pageY - rect.top;
+        var x = e.offsetX;
+        var y = e.offsetY;
         //console.log("stroke to: (" + x + ", " + y + ")");
         if (activeDraw && brushMode == 0) {
     
-            if (e.pageX > rect.left && e.pageX < rect.right && e.pageY < rect.bottom && e.pageY > rect.top) {
+            if (x > 0 && x < rect.width && y < rect.height && y > 0) {
                 ctx.lineTo(x, y);
                 ctx.stroke();
     
@@ -189,8 +190,8 @@ function drawPreview() {
 function mouseRelease(e) {
     
 
-    var x = e.pageX - rect.left;
-    var y = e.pageY - rect.top;
+    var x = e.offsetX;
+    var y = e.offsetY;
     var endPoint = {x:x, y:y};
 
     if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) //we know that this isnt the result of a path, but a single click.

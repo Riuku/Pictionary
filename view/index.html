@@ -44,7 +44,15 @@
     <div class="mid_panel">
         <div id="player_panel" class="player_panel">
         </div>
-        <canvas id="canvas" class="canvas" width="800" height="650" style="border-style:solid"></canvas>
+        <canvas id="canvas" class="canvas" width="600" height="600" style="border-style:solid"></canvas>
+        <div class="sidebar_cont">
+            <div class="sidebar_window">
+                <div class="sidebar">
+                    <div id="chatWindow" class="chatWindow"></div>
+                    <input id="chatbox" class="chatbox" type="text" placeholder="Type message..." maxlength="50">
+                </div>
+            </div>
+        </div>
     </div>
 
 
@@ -73,12 +81,7 @@
             </table>
         </div>
     </div>
-    <div class="sidebar_window">
-        <div class="sidebar">
-            <div id="chatWindow" class="chatWindow"></div>
-        </div>
-        <input id="chatbox" class="chatbox" type="text" placeholder="Type message..." maxlength="50">
-    </div>
+
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="client.js"></script>
