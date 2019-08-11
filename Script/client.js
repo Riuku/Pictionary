@@ -6,20 +6,26 @@ socket.on('disconnect', function () {
 })
 
 socket.on('broadcast', function (json) {
-    console.log("recieved broadcast msg of type: '" + json.type + "'");
+    //console.log("recieved broadcast msg of type: '" + json.type + "'");
     if (json.type == "imgData") {
 
         if (json.img_type == "point") {
-            console.log("drawing point");
+            //console.log("drawing point");
             srv_drawPoint(json.start.x, json.start.y, json.color, json.width);
         } else if (json.img_type == "path") {
-            console.log("drawing path");
+            //console.log("drawing path");
             srv_drawPath(json.start.x, json.start.y, json.end.x, json.end.y, json.color, json.width);
         }
 
     }
     else if (json.type == 'CS')
-        document.getElementById('debug').innerHTML = json.description;
+    {
+        console.log("got CS message! of subtype: " + json.subtype);
+        if (json.subtype == "connect")
+            playerJoin(json.name, json.id);
+        else if (json.subtype == "disconnect")
+            playerLeft(json.name, json.id);
+    }
     else if (json.type == 'clr_cvs')
         clearBoard(true);
     else if (json.type == 'chat')
@@ -101,3 +107,18 @@ function round_timer_end() {
     clearInterval(timer_handle);
 }
 /* #endregion TIMER*/
+
+var player_panel = document.getElementById("player_panel");
+function playerJoin(name, id)
+{
+    console.log("adding player[" + name + ", " + id +  "] to player panel");
+    player_panel.innerHTML += "<div id=\"" + id + "\" class=\"player\">" + name +"</div>"
+}
+
+function playerLeft(name, id)
+{
+    console.log("removing player[" + name + ", " + id +  "] from player panel");
+    // Removes an element from the document
+    var element = document.getElementById(id);
+    element.parentNode.removeChild(element);
+}

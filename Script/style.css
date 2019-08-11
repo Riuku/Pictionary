@@ -1,3 +1,6 @@
+* {
+    user-select: none;
+}
 /* The Modal (background) */
 .modal {
     display: none;
@@ -80,13 +83,21 @@
 .chat_msg_1 {
     background: #7d7d7d;
 }
+
+.top_bar
+{
+    height: 70px;
+    padding: 10px;
+}
+
 .word_panel
 {
     background: grey;
     text-align: center;
+    vertical-align: middle;
     width: 30%;
-    padding: 40px;
-    font-size: 200%;
+    height: 100%;
+    font-size: 150%;
     position: relative;
     left: 100px;
 }
@@ -104,18 +115,36 @@
     left: 0;
     height:70;
     width:100;
-    padding-top: 10px;
-    padding-bottom: 10px;
 }
 .timer_disp
 {
     z-index: 2;
     position: absolute;
-    top: 30;
+    top: 15;
     left: 30;
-    height:35;
-    width:35;
+    height: 40;
+    width: 40;
 }
+.mid_panel
+{
+    position: relative;
+}
+.player_panel
+{
+    position: absolute;
+    border-style:solid;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 60px;
+
+}
+
+/*.player
+{
+    
+}
+*/
 
 .body {
     z-index: 0;
@@ -123,7 +152,7 @@
 
 .canvas {
     cursor: crosshair;
-    left: 100px;
+    left: 220px;
     position: relative;
 }
 

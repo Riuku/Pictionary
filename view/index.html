@@ -34,7 +34,6 @@
         <h1 style="display: inline;">Pictionary!</h1>
         <a href="/view/changelog.html">changelog</a>
     </div>
-    <div id="debug"></div>
     <div class="top_bar">
         <div class="timer_box">
             <img class="timer_bg" src="timer.png">
@@ -42,11 +41,15 @@
         </div>
         <div id="word_panel" class="word_panel"></div>
     </div>
+    <div class="mid_panel">
+        <div id="player_panel" class="player_panel">
+        </div>
+        <canvas id="canvas" class="canvas" width="800" height="650" style="border-style:solid"></canvas>
+    </div>
 
-    <canvas id="canvas" class="canvas" width="450" height="600" style="border-style:solid"></canvas>
 
     <div class="parent">
-        <canvas id="preview" width="200" height="200" style="border-style:solid;"></canvas>
+        <canvas id="preview" draggable="false" width="200" height="200" style="border-style:solid;"></canvas>
         <input id="slider" type="range" min="2" max="200" value="15" oninput="updateRadius();">
         <button id="brush" class="brush" onclick="changeBrush()"></button>
         <!--<button id="fill" class="fill" onclick="changeFill()"></button>-->

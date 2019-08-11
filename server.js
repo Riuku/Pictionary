@@ -62,9 +62,9 @@ io.on('connection', function (socket) {
     var rest = msg.substring(decoded[0].length + 1);
     //console.log("server msg type: " + decoded[0]);
     if (decoded[0] == "conn")
-      connect_client(io, socket, rest);
+      connect_client(socket, rest);
     else if (decoded[0] == "dconn")
-      disconnect_client(rest, io, socket);
+      disconnect_client(socket, rest);
     else if (decoded[0] == "imgData") {
       broadcast_image(JSON.parse(rest));
     }
@@ -90,13 +90,13 @@ http.listen(PORT, function () {
   console.log('listening on 73.98.154.126:8080');
 });
 
-function connect_client(io, socket, name) {
+function connect_client(socket, name) {
   clients++;
   socket.nickname = name;
   client_sockets.push(socket);
-  io.emit('broadcast', { type: "CS", description: clients + ' client(s) connected!' });
+  io.emit('broadcast', { type: "CS", subtype:"connect", name:name, id:socket.id });
   broadcast_chat('', name, 'connect');
-  console.log("userID, name: [" + client_id + ", " + name + "] connected!");
+  console.log("[" + name + ", " + client_id + "] connected!");
   client_id++;
   display_client_list();
   //2 users needed to play a game!
@@ -113,14 +113,16 @@ function connect_client(io, socket, name) {
   }
 }
 
-function disconnect_client(client_id, io, socket) {
+function disconnect_client(socket, client_id) {
+  
   clients--;
   client_sockets = arrayRemove(client_sockets, socket);
-  io.emit('broadcast', { type: "CS", description: clients + ' client(s) connected!' });
+  console.log("[" + socket.nickname + ", " + client_id + "] disconnected!");
+  display_client_list();
+
+  io.emit('broadcast', { type: "CS", subtype:"disconnect", name: socket.nickname, id: client_id });
   broadcast_chat('', socket.nickname, 'disconnect');
   
-  console.log(client_id + " disconnected!");
-  display_client_list();
 }
 
 function broadcast_image(json) {
@@ -178,7 +180,7 @@ function display_client_list()
   process.stdout.write("(" + clients + ") clients connected: [ ")
   for (var i = 0; i < client_sockets.length; i++)
   {
-    process.stdout.write("(" + client_sockets[i].id + ", " + client_sockets[i].nickname + ")");
+    process.stdout.write("(" + client_sockets[i].nickname + ", " + client_sockets[i].id + ")");
   }
   process.stdout.write("]\n");
 }

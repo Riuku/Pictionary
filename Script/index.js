@@ -1,6 +1,7 @@
 var activeDraw = false;
 var brushColor = "#000000"; //black
 var canvas;
+var rect;
 var ctx;
 var previewCanvas = document.getElementById('preview');
 var brushMode = 0; //0 = brush 1 = fill
@@ -8,6 +9,7 @@ var brushMode = 0; //0 = brush 1 = fill
 function init() {
     // Get the canvas and the drawing context.
     canvas = document.getElementById("canvas");
+    rect = canvas.getBoundingClientRect();
     ctx = canvas.getContext("2d");
 
     //default line width 15 pixels;
@@ -20,6 +22,8 @@ function init() {
     canvas.onmouseup = mouseRelease;
     canvas.onmouseout = mouseRelease;
     canvas.onmousemove = draw;
+    canvas.onmouseenter = startDraw;
+    document.onmouseup = doc_mouseRelease;
 
     drawPreview();
     initCanvas();
@@ -45,16 +49,17 @@ function Play() {
 var previousPoint = {x:-1,y:-1};
 var startPoint = {x:-1,y:-1};
 function startDraw(e) {
-    if (e.which == 1) //detects left click on chrome browsers
+    if (e.which == 1 || activeDraw) //detects left click on chrome browsers
     {
+        //console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
         activeDraw = true;
 
         // Create a new path (with the current stroke color and stroke thickness).
         ctx.beginPath();
     
         // Put the pen down where the mouse is positioned.
-        var x = e.pageX - canvas.offsetLeft;
-        var y = e.pageY - canvas.offsetTop;
+        var x = e.pageX - rect.left;
+        var y = e.pageY - rect.top;
         ctx.moveTo(x, y);
 
         //store previous point for sending network updates
@@ -66,13 +71,15 @@ function startDraw(e) {
 function draw(e) {
     if (e.which == 1) //detects left click on chrome browsers
     {
+        
         ctx.strokeStyle = brushColor;
-        var rect = canvas.getBoundingClientRect();
-        var x = e.clientX - rect.left;
-        var y = e.clientY - rect.top;
+        
+        var x = e.pageX - rect.left;
+        var y = e.pageY - rect.top;
+        //console.log("stroke to: (" + x + ", " + y + ")");
         if (activeDraw && brushMode == 0) {
     
-            if (e.clientX > rect.left && e.clientX < rect.right && e.clientY < rect.bottom && e.clientY > rect.top) {
+            if (e.pageX > rect.left && e.pageX < rect.right && e.pageY < rect.bottom && e.pageY > rect.top) {
                 ctx.lineTo(x, y);
                 ctx.stroke();
     
@@ -180,10 +187,10 @@ function drawPreview() {
     }
 }
 function mouseRelease(e) {
-    activeDraw = false;
+    
 
-    var x = e.pageX - canvas.offsetLeft;
-    var y = e.pageY - canvas.offsetTop;
+    var x = e.pageX - rect.left;
+    var y = e.pageY - rect.top;
     var endPoint = {x:x, y:y};
 
     if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) //we know that this isnt the result of a path, but a single click.
@@ -193,12 +200,34 @@ function mouseRelease(e) {
         circle.arc(x,y, ctx.lineWidth / 2, 0, 2 * Math.PI);
         ctx.fill(circle);
         send_draw_updates("point", startPoint, {x:x, y:y}, brushColor, ctx.lineWidth);
+    } else if (activeDraw) //it was a path
+    {
+        ctx.lineTo(x, y);
+        ctx.stroke();
+
+        send_draw_updates("path", previousPoint, endPoint, brushColor, ctx.lineWidth);
+        
     }
+    if (event.type == "mouseup")
+    {
+        console.log("mouse released in canvas!");
+        activeDraw = false;
+    }
+        
 
 }
 
+function doc_mouseRelease(e)
+{
+    if (activeDraw)
+    {
+        console.log("mouse released in document!");
+        activeDraw = false;
+    }
+    
+}
+
 function initCanvas() {
-    var rect = canvas.getBoundingClientRect();
     var pixelArr = ctx.getImageData(0, 0, rect.right, rect.bottom).data;
     pixelArr.fill(255, 0, 10000);
 }
