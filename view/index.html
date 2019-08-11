@@ -30,57 +30,68 @@
 
     </div>
 
-    <div>
-        <h1 style="display: inline;">Pictionary!</h1>
-        <a href="/view/changelog.html">changelog</a>
-    </div>
-    <div class="top_bar">
-        <div class="timer_box">
-            <img class="timer_bg" src="timer.png">
-            <canvas id="timer_disp" class="timer_disp"></canvas>
+    <div class="game_body">
+        <div>
+            <h1 style="display: inline;">Pictionary!</h1>
+            <a href="/view/changelog.html">changelog</a>
         </div>
-        <div id="word_panel" class="word_panel"></div>
-    </div>
-    <div class="mid_panel">
-        <div id="player_panel" class="player_panel">
+        <div class="top_bar">
+            <div class="timer_box">
+                <img class="timer_bg" src="timer.png">
+                <canvas id="timer_disp" class="timer_disp"></canvas>
+            </div>
+            <div id="word_panel" class="word_panel"></div>
         </div>
-        <canvas id="canvas" class="canvas" width="600" height="600" style="border-style:solid"></canvas>
-        <div class="sidebar_cont">
-            <div class="sidebar_window">
-                <div class="sidebar">
-                    <div id="chatWindow" class="chatWindow"></div>
-                    <input id="chatbox" class="chatbox" type="text" placeholder="Type message..." maxlength="50">
+        <div class="mid_panel">
+            <div id="player_panel" class="player_panel">
+            </div>
+            <canvas id="canvas" class="canvas" width="600" height="600" style="border-style:solid"></canvas>
+            <div class="sidebar_cont">
+                <div class="sidebar_window">
+                    <div class="sidebar">
+                        <div id="chatWindow" class="chatWindow"></div>
+                        <input id="chatbox" class="chatbox" type="text" placeholder="Type message..." maxlength="50">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-    <div class="parent">
-        <canvas id="preview" draggable="false" width="200" height="200" style="border-style:solid;"></canvas>
-        <input id="slider" type="range" min="2" max="200" value="15" oninput="updateRadius();">
-        <button id="brush" class="brush" onclick="changeBrush()"></button>
-        <!--<button id="fill" class="fill" onclick="changeFill()"></button>-->
-        <button id="clear" class="clear" onclick="clearBoard(false)"></button>
-        <div class="colorbox">
-            <table style="border-collapse: collapse;">
-                <button class="innercolor" style="background:#ff0000" onclick="changeColor('#ff0000')"></button>
-                <button class="innercolor" style="background:#ffa500" onclick="changeColor('#ffa500')"></button>
-                <button class="innercolor" style="background:#ffff00" onclick="changeColor('#ffff00')"></button>
-                <button class="innercolor" style="background:#008000" onclick="changeColor('#008000')"></button>
-                <button class="innercolor" style="background:#0000ff" onclick="changeColor('#0000ff')"></button>
-                <button class="innercolor" style="background:#4b0082" onclick="changeColor('#4b0082')"></button>
-                <button class="innercolor" style="background:#ee82ee" onclick="changeColor('#ee82ee')"></button>
-                <button class="innercolor" style="background:#000000" onclick="changeColor('#000000')"></button>
-                <button class="innercolor" style="background:#ffffff" onclick="changeColor('#ffffff')"></button>
-                <button class="innercolor" style="background:#a52a2a" onclick="changeColor('#a52a2a')"></button>
-                <button class="innercolor" style="background:#00fafa" onclick="changeColor('#00fafa')"></button>
-                <button class="innercolor" style="background:#ff4766" onclick="changeColor('#ff4766')"></button>
-                <button class="innercolor" style="background:#808080" onclick="changeColor('#808080')"></button>
-                <button class="innercolor" style="background:#c0c0c0" onclick="changeColor('#c0c0c0')"></button>
-            </table>
+        <div class="parent">
+            <div class="button_ctrls">
+                <button id="brush" class="brush" onclick="changeBrush()"></button>
+                <!--<button id="fill" class="fill" onclick="changeFill()"></button>-->
+                <button id="clear" class="clear" onclick="clearBoard(false)"></button>
+                <div class="colorbox">
+                        <table style="border-collapse: collapse;">
+                            <button class="innercolor" style="background:#ff0000" onclick="changeColor('#ff0000')"></button>
+                            <button class="innercolor" style="background:#ffa500" onclick="changeColor('#ffa500')"></button>
+                            <button class="innercolor" style="background:#ffff00" onclick="changeColor('#ffff00')"></button>
+                            <button class="innercolor" style="background:#008000" onclick="changeColor('#008000')"></button>
+                            <button class="innercolor" style="background:#0000ff" onclick="changeColor('#0000ff')"></button>
+                            <button class="innercolor" style="background:#4b0082" onclick="changeColor('#4b0082')"></button>
+                            <button class="innercolor" style="background:#ee82ee" onclick="changeColor('#ee82ee')"></button>
+                            <button class="innercolor" style="background:#000000" onclick="changeColor('#000000')"></button>
+                            <button class="innercolor" style="background:#ffffff" onclick="changeColor('#ffffff')"></button>
+                            <button class="innercolor" style="background:#a52a2a" onclick="changeColor('#a52a2a')"></button>
+                            <button class="innercolor" style="background:#00fafa" onclick="changeColor('#00fafa')"></button>
+                            <button class="innercolor" style="background:#ff4766" onclick="changeColor('#ff4766')"></button>
+                            <button class="innercolor" style="background:#808080" onclick="changeColor('#808080')"></button>
+                            <button class="innercolor" style="background:#c0c0c0" onclick="changeColor('#c0c0c0')"></button>
+                        </table>
+                    </div>
+            </div>
+
+            
+            <div class="preview_cont">
+                <input id="slider" type="range" min="2" max="200" value="15" oninput="updateRadius();">
+                <canvas id="preview" draggable="false" width="200" height="200" style="border-style:solid;"></canvas>
+            </div>
+
+
         </div>
     </div>
+
 
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>

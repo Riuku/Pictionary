@@ -1,6 +1,15 @@
 * {
     user-select: none;
 }
+.game_body
+{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    margin-right: 100;
+    margin-left: 100;
+}
+
 /* The Modal (background) */
 .modal {
     display: none;
@@ -90,6 +99,8 @@
 
 .top_bar
 {
+    display: flex;
+    justify-content: center;
     height: 70px;
     padding: 10px;
 }
@@ -99,11 +110,8 @@
     background: grey;
     text-align: center;
     vertical-align: middle;
-    width: 30%;
-    height: 100%;
+    width: 100%;
     font-size: 150%;
-    position: relative;
-    left: 100px;
 }
 
 .timer_box
@@ -125,9 +133,9 @@
     z-index: 2;
     position: absolute;
     top: 15;
-    left: 30;
-    height: 40;
-    width: 40;
+    left: 25;
+    height: 50;
+    width: 45;
 }
 .mid_panel
 {
@@ -216,8 +224,7 @@
     background-repeat: no-repeat;
     height: 45px;
     width: 45px;
-    position: absolute;
-    left: 310px;
+    position: relative;
 }
 
 .fill {
@@ -226,8 +233,7 @@
     background-repeat: no-repeat;
     height: 45px;
     width: 45px;
-    position: absolute;
-    left: 360px;
+    position: relative;
 }
 
 .clear {
@@ -236,30 +242,34 @@
     background-repeat: no-repeat;
     height: 45px;
     width: 45px;
-    position: absolute;
-    left: 410px;
+    position: relative;
+}
+.button_ctrls {
+    padding-right: 20;
 }
 
 .parent {
-    position: relative;
+    padding:10;
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
 }
 
 #slider {
-    position: absolute;
-    top: 20px;
-    left: 40px;
+    position: relative;
 }
 
 #preview {
-    position: absolute;
-    top: 50px;
+    position: relative;
 }
-
+.preview_cont
+{
+    display: flex;
+    flex-direction: column;
+}
 .colorbox {
     position: relative;
     border-style: solid;
-    top: 50px;
-    left: 240px;
     width: 210px;
 }
 
