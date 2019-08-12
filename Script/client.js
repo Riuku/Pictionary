@@ -1,5 +1,6 @@
 var timer_time;
-var timer_handle;
+var timer_tick_handle;
+var timer_end_handle;
 var socket = io.connect("http://73.98.154.126:8080");
 socket.on('disconnect', function () {
     dconn();
@@ -18,8 +19,7 @@ socket.on('broadcast', function (json) {
         }
 
     }
-    else if (json.type == 'CS')
-    {
+    else if (json.type == 'CS') {
         console.log("got CS message! of subtype: " + json.subtype);
         if (json.subtype == "connect")
             playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
@@ -33,27 +33,29 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'init')
         round_start(json.words, json.drawer);
     else if (json.type == 'round_start') {
-        
-        timer_time = json.time / 1000; //seconds
-        update_timer();
-        timer_handle = setInterval(update_timer, 1000);
-        setTimeout(round_timer_end, json.time);
 
-        if (socket.id == json.drawer) {
-            display_blanks(json.word);
-        } else
-        {
-            display_blanks(json.blanks);
-        }
+        timer_blank_info(json.time, json.drawer, json.blanks, json.word);
+    }
+    else if (json.type == 'late_start')
+    {
+        if (socket.id == json.usr)
+            timer_blank_info(json.time, json.drawer, json.blanks, json.word);
     }
     else if (json.type == 'draw_hist') {
         if (socket.id == json.usr)
             update_draw_history(json.data);
     }
-    else if (json.type == "update_players")
-    {
+    else if (json.type == "update_players") {
         if (socket.id == json.usr)
             update_player_panel(json.data);
+    }
+    else if (json.type == "points") {
+        update_points(json.data);
+    }
+    else if (json.type == "end_round")
+    {
+        clearTimeout(timer_end_handle);
+        round_timer_end();
     }
 });
 
@@ -107,45 +109,65 @@ time_ctx.textAlign = "center";
 
 function update_timer() {
     console.log("current timer: " + timer_time);
-    time_ctx.clearRect(0,0, timer_disp_canvas.width, timer_disp_canvas.height);
+    time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
     time_ctx.fillText(timer_time, 160, 160);
     timer_time -= 1;
 }
 
 function round_timer_end() {
     console.log("TIME END");
-    clearInterval(timer_handle);
+    clearInterval(timer_tick_handle);
 }
 /* #endregion TIMER*/
 
 var player_panel = document.getElementById("player_panel");
-function playerJoin(name, id, score, rank)
-{
+function playerJoin(name, id, score, rank) {
     enter_lobby();
-    console.log("adding player[" + name + ", " + id +  "] to player panel");
-    player_panel.innerHTML += 
+    console.log("adding player[" + name + ", " + id + "] to player panel");
+    player_panel.innerHTML +=
         "<div id=\"" + id + "\" class=\"player\">\
-        <div class=\"rank\">#" + rank + "</div><div class=\"info\">\
+        <div class=\"rank\">#" + rank + "</div>\
+        <div class=\"info\">\
         <div class=\"name\">" + name + "</div>\
         <div class=\"score\">Points: " + score + "</div></div></div>";
 }
 
-function playerLeft(name, id)
-{
-    console.log("removing player[" + name + ", " + id +  "] from player panel");
+function playerLeft(name, id) {
+    console.log("removing player[" + name + ", " + id + "] from player panel");
     // Removes an element from the document
     var element = document.getElementById(id);
     element.parentNode.removeChild(element);
 }
 
-function update_player_panel(player_data)
-{
-    for (var i = 0; i < player_data.length; i++)
-    {
+function update_player_panel(player_data) {
+    for (var i = 0; i < player_data.length; i++) {
         var player = player_data[i];
-        if (player.id != socket.id)
-        {
+        if (player.id != socket.id) {
             playerJoin(player.name, player.id, player.score, player.rank);
         }
+    }
+}
+
+function update_points(client_data) {
+    client_data.forEach((el) => {
+        var container = document.getElementById(el.id);
+        var score_element = container.querySelector('.score');
+        score_element.innerHTML = "Points: " + el.score;
+    });
+
+
+}
+
+function timer_blank_info(current_time, drawer, blanks, word)
+{
+    timer_time = Math.round(current_time / 1000);
+    update_timer();
+    timer_tick_handle = setInterval(update_timer, 1000);
+    timer_end_handle = setTimeout(round_timer_end, current_time);
+
+    if (socket.id == drawer) {
+        display_blanks(word);
+    } else {
+        display_blanks(blanks);
     }
 }

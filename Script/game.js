@@ -6,6 +6,10 @@ var select_word_timeout_handle;
 var current_round_words = [];
 
 var drawing_controls = document.getElementById("drawing_controls");
+
+
+var container = document.querySelector("#word_prompt_modal");
+var modal_content = container.querySelector("div.modal-content");
 function round_start(words, drawer)
 {
     console.log("round start!");
@@ -13,10 +17,9 @@ function round_start(words, drawer)
     {
         current_round_words = words;
         //send to other clients to let them know you are currently choosing a word.
-        socket.emit('server msg', 'chat:' + '\0' + socket.nickname + '\0' + 'choosing');
+        socket.emit('server msg', 'chat:' + '\0' + 'choosing');
         
-        var container = document.querySelector("#word_prompt_modal");
-        var modal_content = container.querySelector("div.modal-content")
+        
 
         var paragraph = document.createElement('p');
         paragraph.appendChild(document.createTextNode("Select a word:"));
@@ -46,10 +49,13 @@ function set_round_word(word)
 {
     clearTimeout(select_word_timeout_handle);
     //send to other clients to let them know you are currently drawing.
-    socket.emit('server msg', 'chat:' + '\0' + socket.nickname + '\0' + 'drawing');
+    socket.emit('server msg', 'chat:' + '\0' + 'drawing');
 
     console.log("chosen word: " + word);
     word_prompt_modal.style.display = "none"; //close word prompt
+
+    modal_content.innerHTML = ""; //clear previous modal content.
+
     drawing_controls.style.visibility = "visible"; //enable drawing controls
     current_drawer = true; //allow drawing
 

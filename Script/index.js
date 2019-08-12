@@ -92,73 +92,12 @@ function draw(e) {
     
     
         } else if (activeDraw && brushMode == 1) {
-            /*
-            if (e.clientX > rect.left && e.clientX < rect.right && e.clientY < rect.bottom && e.clientY > rect.top) {
-                var pixel = ctx.getImageData(x,y,1,1).data;
-                var t_color = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
-                //console.log("\t brush_color=" + brushColor + " t_color=" + t_color);
-                if (t_color != brushColor)
-                {
-                    x = Math.floor(x);
-                    y = Math.floor(y);
-                    Flood_Fill(x, y, t_color, rect);
-    
-                }
-            }
-            */
+            //fill mode disabled currently.
         }
     }
     
 }
 
-/*function Flood_Fill(x, y, t_color, rect) {
-    var init_x = x;
-    var init_y = y;
-    //up
-    var up_pix = ctx.getImageData(init_x, init_y - 1, 1, 1).data;
-    var up_p_color = "#" + ("000000" + rgbToHex(up_pix[0], up_pix[1], up_pix[2])).slice(-6);
-    while (up_p_color == t_color && y >= rect.top - 80) {
-        y--;
-        ctx.fillRect(x, y, 1, 1);
-        up_pix = ctx.getImageData(x, y - 1, 1, 1).data;
-        up_p_color = "#" + ("000000" + rgbToHex(up_pix[0], up_pix[1], up_pix[2])).slice(-6);
-    }
-
-    y = init_y;
-
-    //down
-    var down_pix = ctx.getImageData(init_x, init_y + 1, 1, 1).data;
-    var down_p_color = "#" + ("000000" + rgbToHex(down_pix[0], down_pix[1], down_pix[2])).slice(-6);
-    while (down_p_color == t_color && y <= rect.bottom) {
-        y++;
-        ctx.fillRect(x, y, 1, 1);
-        down_pix = ctx.getImageData(x, y + 1, 1, 1).data;
-        down_p_color = "#" + ("000000" + rgbToHex(down_pix[0], down_pix[1], down_pix[2])).slice(-6);
-    }
-    y = init_y;
-
-    //left
-    var left_pix = ctx.getImageData(init_x - 1, init_y, 1, 1).data;
-    var left_p_color = "#" + ("000000" + rgbToHex(left_pix[0], left_pix[1], left_pix[2])).slice(-6);
-    while (left_p_color == t_color && x >= rect.left - 6) {
-        x--;
-        ctx.fillRect(x, y, 1, 1);
-        left_pix = ctx.getImageData(x - 1, y, 1, 1).data;
-        left_p_color = "#" + ("000000" + rgbToHex(left_pix[0], left_pix[1], left_pix[2])).slice(-6);
-    }
-    x = init_x;
-
-    //right
-    var right_pix = ctx.getImageData(init_x + 1, init_y, 1, 1).data;
-    var right_p_color = "#" + ("000000" + rgbToHex(right_pix[0], right_pix[1], right_pix[2])).slice(-6);
-    while (right_p_color == t_color && x <= rect.right) {
-        x++;
-        ctx.fillRect(x, y, 1, 1);
-        right_pix = ctx.getImageData(x + 1, y, 1, 1).data;
-        right_p_color = "#" + ("000000" + rgbToHex(right_pix[0], right_pix[1], right_pix[2])).slice(-6);
-    }
-    x = init_x;
-}*/
 
 function rgbToHex(r, g, b) {
     if (r > 255 || g > 255 || b > 255)
@@ -229,11 +168,6 @@ function doc_mouseRelease(e)
     
 }
 
-/*function initCanvas() {
-    var pixelArr = ctx.getImageData(0, 0, rect.right, rect.bottom).data;
-    pixelArr.fill(255, 0, 10000);
-}
-*/
 
 function clearBoard(server_call) {
     if (!server_call)

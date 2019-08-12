@@ -6,12 +6,12 @@ var toggle_bg = 0;
 chatbox.addEventListener('keydown', () =>
 {
     if ((event.code == "Enter" || event.code == "NumpadEnter") && chatbox.value != "")
-        sendText(chatbox.value, socket.nickname);
+        sendText(chatbox.value);
 });
 
-function sendText(msg, user)
+function sendText(msg)
 {
-    socket.emit('server msg', 'chat:' + msg + '\0' + user + '\0' + 'normal');
+    socket.emit('server msg', 'chat:' + msg + '\0' + 'normal');
     chatbox.value = "";
 }
 
