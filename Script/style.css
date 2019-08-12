@@ -161,6 +161,15 @@
     justify-content: space-between;
     align-items: center;
 }
+.player_panel :nth-child(even)
+{
+    background:#E3E3E3;
+}
+
+.player_panel :nth-child(odd)
+{
+    background: white;
+}
 .rank
 {
 	width: 34px;
@@ -244,12 +253,24 @@
     width: 45px;
     position: relative;
 }
+
+.mute
+{
+    background: url('../unmute.jpg');
+    background-size: 40px;
+    background-repeat: no-repeat;
+    height: 45px;
+    width: 45px;
+    position: relative;
+}
+
 .button_ctrls {
     padding-right: 20;
 }
 
-.parent {
+.drawing_controls {
     padding:10;
+    visibility: hidden;
     display: flex;
     justify-content: center;
     flex-direction: row;
@@ -280,3 +301,4 @@
     height: 30px;
     padding: 0px;
 }
+

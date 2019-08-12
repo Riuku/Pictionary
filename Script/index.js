@@ -5,6 +5,7 @@ var rect;
 var ctx;
 var previewCanvas = document.getElementById('preview');
 var brushMode = 0; //0 = brush 1 = fill
+var current_drawer = false;
 
 function init() {
     // Get the canvas and the drawing context.
@@ -26,7 +27,7 @@ function init() {
     document.onmouseup = doc_mouseRelease;
 
     drawPreview();
-    initCanvas();
+    //initCanvas();
     promptForName();
 }
 
@@ -49,7 +50,7 @@ function Play() {
 var previousPoint = {x:-1,y:-1};
 var startPoint = {x:-1,y:-1};
 function startDraw(e) {
-    if (e.which == 1 || activeDraw) //detects left click on chrome browsers
+    if ((e.which == 1 || activeDraw) && current_drawer) //detects left click on chrome browsers
     {
         console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
         activeDraw = true;
@@ -70,7 +71,7 @@ function startDraw(e) {
 }
 
 function draw(e) {
-    if (e.which == 1) //detects left click on chrome browsers
+    if (e.which == 1 && current_drawer) //detects left click on chrome browsers
     {
         
         ctx.strokeStyle = brushColor;
@@ -189,38 +190,38 @@ function drawPreview() {
 }
 function mouseRelease(e) {
     
-
-    var x = e.offsetX;
-    var y = e.offsetY;
-    var endPoint = {x:x, y:y};
-
-    if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) //we know that this isnt the result of a path, but a single click.
+    if (current_drawer)
     {
-        ctx.fillStyle = brushColor;
-        var circle = new Path2D();
-        circle.arc(x,y, ctx.lineWidth / 2, 0, 2 * Math.PI);
-        ctx.fill(circle);
-        send_draw_updates("point", startPoint, {x:x, y:y}, brushColor, ctx.lineWidth);
-    } else if (activeDraw) //it was a path
-    {
-        ctx.lineTo(x, y);
-        ctx.stroke();
-
-        send_draw_updates("path", previousPoint, endPoint, brushColor, ctx.lineWidth);
-        
+        var x = e.offsetX;
+        var y = e.offsetY;
+        var endPoint = {x:x, y:y};
+    
+        if (startPoint.x == endPoint.x && startPoint.y == endPoint.y) //we know that this isnt the result of a path, but a single click.
+        {
+            ctx.fillStyle = brushColor;
+            var circle = new Path2D();
+            circle.arc(x,y, ctx.lineWidth / 2, 0, 2 * Math.PI);
+            ctx.fill(circle);
+            send_draw_updates("point", startPoint, {x:x, y:y}, brushColor, ctx.lineWidth);
+        } else if (activeDraw) //it was a path
+        {
+            ctx.lineTo(x, y);
+            ctx.stroke();
+    
+            send_draw_updates("path", previousPoint, endPoint, brushColor, ctx.lineWidth);
+            
+        }
+        if (event.type == "mouseup")
+        {
+            console.log("mouse released in canvas!");
+            activeDraw = false;
+        }
     }
-    if (event.type == "mouseup")
-    {
-        console.log("mouse released in canvas!");
-        activeDraw = false;
-    }
-        
-
 }
 
 function doc_mouseRelease(e)
 {
-    if (activeDraw)
+    if (activeDraw && current_drawer)
     {
         console.log("mouse released in document!");
         activeDraw = false;
@@ -228,11 +229,11 @@ function doc_mouseRelease(e)
     
 }
 
-function initCanvas() {
+/*function initCanvas() {
     var pixelArr = ctx.getImageData(0, 0, rect.right, rect.bottom).data;
     pixelArr.fill(255, 0, 10000);
 }
-
+*/
 
 function clearBoard(server_call) {
     if (!server_call)

@@ -36,7 +36,12 @@ function receiveText(msg, user, property)
     }
     else if (property == 'guessed')
     {
-        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#BA55D3;'>'" + user + "' guessed the word!" + "</p>"
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#CF18E7;'>'" + user + "' guessed the word!" + "</p>"
+    }
+    else if (property == 'choosing')
+    {
+        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#800080;'>'" + user + "' is currently choosing a word!" + "</p>"
+
     }
 
     var cw = document.querySelector("#chatWindow");

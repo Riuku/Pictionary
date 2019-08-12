@@ -22,7 +22,7 @@ socket.on('broadcast', function (json) {
     {
         console.log("got CS message! of subtype: " + json.subtype);
         if (json.subtype == "connect")
-            playerJoin(json.name, json.id);
+            playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
         else if (json.subtype == "disconnect")
             playerLeft(json.name, json.id);
     }
@@ -33,17 +33,27 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'init')
         round_start(json.words, json.drawer);
     else if (json.type == 'round_start') {
-        if (socket.id == json.usr || json.usr == "") {
+        
+        timer_time = json.time / 1000; //seconds
+        update_timer();
+        timer_handle = setInterval(update_timer, 1000);
+        setTimeout(round_timer_end, json.time);
+
+        if (socket.id == json.drawer) {
+            display_blanks(json.word);
+        } else
+        {
             display_blanks(json.blanks);
-            timer_time = json.time / 1000; //seconds
-            update_timer();
-            timer_handle = setInterval(update_timer, 1000);
-            setTimeout(round_timer_end, json.time);
         }
     }
     else if (json.type == 'draw_hist') {
         if (socket.id == json.usr)
             update_draw_history(json.data);
+    }
+    else if (json.type == "update_players")
+    {
+        if (socket.id == json.usr)
+            update_player_panel(json.data);
     }
 });
 
@@ -109,14 +119,15 @@ function round_timer_end() {
 /* #endregion TIMER*/
 
 var player_panel = document.getElementById("player_panel");
-function playerJoin(name, id)
+function playerJoin(name, id, score, rank)
 {
+    enter_lobby();
     console.log("adding player[" + name + ", " + id +  "] to player panel");
     player_panel.innerHTML += 
         "<div id=\"" + id + "\" class=\"player\">\
-        <div class=\"rank\">#1</div><div class=\"info\">\
+        <div class=\"rank\">#" + rank + "</div><div class=\"info\">\
         <div class=\"name\">" + name + "</div>\
-        <div class=\"score\">Points: 0</div></div></div>";
+        <div class=\"score\">Points: " + score + "</div></div></div>";
 }
 
 function playerLeft(name, id)
@@ -125,4 +136,16 @@ function playerLeft(name, id)
     // Removes an element from the document
     var element = document.getElementById(id);
     element.parentNode.removeChild(element);
+}
+
+function update_player_panel(player_data)
+{
+    for (var i = 0; i < player_data.length; i++)
+    {
+        var player = player_data[i];
+        if (player.id != socket.id)
+        {
+            playerJoin(player.name, player.id, player.score, player.rank);
+        }
+    }
 }
