@@ -22,14 +22,20 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'CS') {
         console.log("got CS message! of subtype: " + json.subtype);
         if (json.subtype == "connect")
+        {
+            //play lobby sound effect if connection did not originate from self.
+            if (socket.id != json.id)
+                enter_lobby();
+            
             playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
+        }
         else if (json.subtype == "disconnect")
             playerLeft(json.name, json.id);
     }
     else if (json.type == 'clr_cvs')
         clearBoard(true);
     else if (json.type == 'chat')
-        receiveText(json.msg, json.usr, json.property);
+        receiveText(json.msg, json.usr, json.usr_id, json.property);
     else if (json.type == 'init')
         round_start(json.words, json.drawer);
     else if (json.type == 'round_start') {
@@ -54,6 +60,7 @@ socket.on('broadcast', function (json) {
     }
     else if (json.type == "end_round")
     {
+        fin = false;
         clearTimeout(timer_end_handle);
         round_timer_end();
     }
@@ -108,21 +115,20 @@ time_ctx.fillStyle = "red";
 time_ctx.textAlign = "center";
 
 function update_timer() {
-    console.log("current timer: " + timer_time);
+    //console.log("current timer: " + timer_time);
     time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
     time_ctx.fillText(timer_time, 160, 160);
     timer_time -= 1;
 }
 
 function round_timer_end() {
-    console.log("TIME END");
+    //console.log("TIME END");
     clearInterval(timer_tick_handle);
 }
 /* #endregion TIMER*/
 
 var player_panel = document.getElementById("player_panel");
 function playerJoin(name, id, score, rank) {
-    enter_lobby();
     console.log("adding player[" + name + ", " + id + "] to player panel");
     player_panel.innerHTML +=
         "<div id=\"" + id + "\" class=\"player\">\

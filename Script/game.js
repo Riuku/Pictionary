@@ -15,6 +15,8 @@ function round_start(words, drawer)
     console.log("round start!");
     if (socket.id == drawer)
     {
+        activeDraw = false;
+        fin = true;
         current_round_words = words;
         //send to other clients to let them know you are currently choosing a word.
         socket.emit('server msg', 'chat:' + '\0' + 'choosing');

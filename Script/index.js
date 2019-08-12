@@ -1,5 +1,6 @@
 var activeDraw = false;
 var brushColor = "#000000"; //black
+var brushWidth = 15;
 var canvas;
 var rect;
 var ctx;
@@ -14,7 +15,7 @@ function init() {
     ctx = canvas.getContext("2d");
 
     //default line width 15 pixels;
-    ctx.lineWidth = 15;
+    ctx.lineWidth = brushWidth;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
@@ -50,9 +51,10 @@ function Play() {
 var previousPoint = {x:-1,y:-1};
 var startPoint = {x:-1,y:-1};
 function startDraw(e) {
+    console.log("activeDraw: " + activeDraw);
     if ((e.which == 1 || activeDraw) && current_drawer) //detects left click on chrome browsers
     {
-        console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
+        //console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
         activeDraw = true;
 
         // Create a new path (with the current stroke color and stroke thickness).
@@ -63,7 +65,7 @@ function startDraw(e) {
         var y = e.offsetY;
 
         ctx.moveTo(x, y);
-    console.log("canvas position: (x,y): (" + x + ", " + y + ")");
+        //console.log("canvas position: (x,y): (" + x + ", " + y + ")");
         //store previous point for sending network updates
         previousPoint = startPoint = {x: x, y: y};
     }
