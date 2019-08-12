@@ -1,0 +1,8 @@
+-prevent drawer (drawing player) from guessing word themselves, or displaying chat to those who haven't guessed yet.
+-fix player_panel UI bug with background color toggle.
+-avatars
+-displaying (current word / point distributions) at the end of round.
+-green highlighting on player panel when word is guessed correctly.
+-fix timer text clipping into side of canvas.
+-add more sound effects.
+-implement checking for similar words to current word (close).
