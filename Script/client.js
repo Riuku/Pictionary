@@ -91,9 +91,6 @@ socket.on('broadcast', function (json) {
         if (socket.id == json.usr)
             update_draw_history(json.data);
     }
-    else if (json.type == "points") {
-        update_points(json.data);
-    }
     else if (json.type == "end_round")
     {
         if (json.permanence)
@@ -108,6 +105,9 @@ socket.on('broadcast', function (json) {
             clearTimeout(select_word_timeout_handle);
             
             
+        } else
+        {
+            update_client_data(json.data);
         }
         
         fin = false;
@@ -183,25 +183,33 @@ function round_timer_end() {
 var player_panel = document.getElementById("player_panel");
 function playerJoin(self, name, id, score, rank) {
 
-    var name_color = "black";
-    if (self)
+    var element = document.getElementById(id);
+    if (element === null)
     {
-        name = name + " (you)";
-        name_color = "blue";
-    }
-
-    console.log("adding player[" + name + ", " + id + "] to player panel");
-    player_panel.innerHTML +=
-        "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
-        <div class=\"rank\">#" + rank + "</div>\
-        <div class=\"info\">\
-        <div class=\"name\" style=\"color:" + name_color + ";\">" + name + "</div>\
-        <div class=\"score\">Points: " + score + "</div></div></div>";
-
-    if (player_toggle == 0)
-        player_toggle = 1;
-    else
-        player_toggle = 0;
+        var name_color = "black";
+        if (self)
+        {
+            name = name + " (you)";
+            name_color = "blue";
+        }
+    
+    
+        
+        console.log("self: " + self +" adding player[" + name + ", " + id + "] to player panel");
+        player_panel.innerHTML +=
+            "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
+            <div class=\"rank\">#" + rank + "</div>\
+            <div class=\"info\">\
+            <div class=\"name\" style=\"color:" + name_color + ";\">" + name + "</div>\
+            <div class=\"score\">Points: " + score + "</div></div></div>";
+    
+        if (player_toggle == 0)
+            player_toggle = 1;
+        else
+            player_toggle = 0;
+    } else
+        console.log("we've hit a race condition scenario!");
+    
 }
 
 function playerLeft(name, id) {
@@ -220,13 +228,29 @@ function update_player_panel(player_data) {
     }
 }
 
-function update_points(client_data) {
+function update_client_data(client_data) {
+
+    //sort scores in descending order.
+    client_data.sort((a,b)=>{
+        return b.score - a.score;
+    });
+    var rank = 1;
+    var previous = client_data[0].score;
     client_data.forEach((el) => {
         var container = document.getElementById(el.id);
         var score_element = container.querySelector('.score');
         score_element.innerHTML = "Points: " + el.score;
-    });
 
+        var rank_element = container.querySelector('.rank');
+        if (previous != el.score)
+        {
+            rank++;
+        }
+        previous = el.score;
+        rank_element.innerHTML = "#" + rank;
+
+    });
+    socket.emit('server msg', 'max_rank:' + rank);
 
 }
 

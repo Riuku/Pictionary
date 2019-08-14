@@ -44,7 +44,7 @@ function round_start(words, drawer_id, drawer_name)
         ol_choosing.style.display = "block";
         ol_choosing_text.innerHTML = drawer_name + " is choosing a word...";
 
-        //you are not the drawer this round.
+        //you are not the drawer
         current_drawer = false; //disallow drawing
         drawing_controls.style.visibility = "hidden"; //disable drawing controls
 
@@ -56,6 +56,8 @@ var word_panel = document.getElementById("word_panel");
 function set_round_word(word)
 {
     clearTimeout(select_word_timeout_handle);
+    clearBoard(false); //clear all clients drawing from last round before drawing.
+
     //send to other clients to let them know you are currently drawing.
     socket.emit('server msg', 'chat:' + '\0' + 'drawing');
 

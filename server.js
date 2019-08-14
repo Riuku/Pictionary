@@ -19,9 +19,12 @@ var canvas_history = [];
 var words;
 var current_drawer = { name: "undefined" };
 var round_timer_hndl;
+var next_round_start_hndl;
 var roundTime = 60000; //60 seconds
 var start_time;
 var current_last_rank = 1;
+
+var logging = false;
 
 
 fs.readFile('word_list.txt', 'utf-8', (err, data) => {
@@ -46,11 +49,11 @@ app.use(express.static(__dirname + '/sounds'));
 app.use('/', router);
 
 io.on('connection', function (socket) {
-  console.log("a user connected: [" + socket.id + "]")
+  log("a user connected: [" + socket.id + "]")
   socket.on('server msg', function (msg) {
     var decoded = msg.split(':', 1);
     var rest = msg.substring(decoded[0].length + 1);
-    //console.log("server msg type: " + decoded[0]);
+    //log("server msg type: " + decoded[0]);
     if (decoded[0] == "conn")
       connect_client(socket, rest);
     else if (decoded[0] == "dconn")
@@ -70,7 +73,11 @@ io.on('connection', function (socket) {
       current_word = blanks_word[1];
       round_start(current_blanks_disp, roundTime);
 
-      console.log("cw:" + current_word);
+      log("cw:" + current_word);
+    }
+    else if (decoded[0] == 'max_rank')
+    {
+      current_last_rank = rest;
     }
 
   });
@@ -78,17 +85,17 @@ io.on('connection', function (socket) {
 });
 
 http.listen(PORT, function () {
-  console.log('listening on 73.98.154.126:8080');
+  log('listening on 73.98.154.126:8080');
 });
 
 function connect_client(socket, name) {
   clients++;
   socket.nickname = name;
-  client_sockets.push({ id: socket.id, name: name, rank: current_last_rank, score: 0, finished: false });
+  client_sockets.push({ id: socket.id, name: name, rank: current_last_rank, score: 0, round_score:0, finished: false });
 
-  console.log("[" + name + ", " + client_id + "] connected!");
+  log("[" + name + ", " + client_id + "] connected!");
   client_id++;
-  display_client_list();
+  //display_client_list();
 
   io.emit('broadcast', { type: "CS", subtype: "connect", name: name, id: socket.id, gamestate: gamestate, drawer_name: current_drawer.name, last_rank:current_last_rank, player_data:client_sockets });
   broadcast_chat(socket, '', 'connect');
@@ -123,7 +130,7 @@ function disconnect_client(socket, client_id) {
       cleanup();
   }
 
-  console.log("[" + socket.nickname + ", " + client_id + "] disconnected!");
+  log("[" + socket.nickname + ", " + client_id + "] disconnected!");
   display_client_list();
 
 
@@ -139,7 +146,7 @@ function broadcast_image(json) {
   var color = json.color;
   var width = json.width;
   canvas_history.push(json);
-  //console.log("broadcasting to clients: type:imgData img_type:" + type + " start: {" + start.x + ", " + start.y + "} end: {" + end.x + ", " + end.y + "} color: " + color + " width: " + width);
+  //log("broadcasting to clients: type:imgData img_type:" + type + " start: {" + start.x + ", " + start.y + "} end: {" + end.x + ", " + end.y + "} color: " + color + " width: " + width);
   io.emit('broadcast', { type: "imgData", img_type: type, start: start, end: end, color: color, width: width });
 }
 
@@ -149,18 +156,18 @@ function send_clear() {
 }
 
 function send_end_round(permanence) {
-  io.emit('broadcast', { type: 'end_round',  permanence:permanence });
+  io.emit('broadcast', { type: 'end_round',  permanence:permanence, data:client_sockets});
 }
 
 function broadcast_chat(socket, mesg, property) {
-  console.log("msg: '" + mesg + "' username: '" + socket.nickname + "' property: '" + property + "'");
+  log("msg: '" + mesg + "' username: '" + socket.nickname + "' property: '" + property + "'");
 
   if (property == 'normal') //prevents disconnects from crashing server.
   {
     var chat_from = arrayFind(client_sockets, socket.id);
 
     if (chat_from == undefined) {
-      console.log("client_sockets does not contain usr:[" + socket.id + "]");
+      log("client_sockets does not contain usr:[" + socket.id + "]");
       return;
     }
 
@@ -184,26 +191,25 @@ function broadcast_chat(socket, mesg, property) {
 function broadcast_start() {
 
   var selectedWords = [];
-  console.log("selecting words:");
+  log("selecting words:");
   for (var i = 0; i < 3;) {
     var index = Math.floor(Math.random() * words.length - 1);
 
     if (!selectedWords.includes(words[index])) {
       selectedWords.push(words[index]);
-      console.log("\trandom word at index:" + index + ", '" + words[index] + "'");
+      log("\trandom word at index:" + index + ", '" + words[index] + "'");
       i++;
     }
 
   }
-  //console.log("3 random words chosen: '" + selectedWords[0] + "', '" + selectedWords[1] + "' , '" + selectedWords[2] + "'");
   current_drawer = client_sockets[++drawer];
   if (drawer > client_sockets.length - 1) {
     drawer = 0;
     current_drawer = client_sockets[drawer];
   }
   gamestate = "choosing";
-  console.log("gamestate:" + gamestate);
-  console.log("Start of round! " + current_drawer.name + " is the current drawer!");
+  log("gamestate:" + gamestate);
+  log("Start of round! " + current_drawer.name + " is the current drawer!");
   io.emit('broadcast', { type: 'init', words: selectedWords, drawer_id: current_drawer.id, drawer_name: current_drawer.name });
 }
 
@@ -231,7 +237,7 @@ function arrayFind(arr, id) {
 
 function round_start(blanks, time) {
   gamestate = "running";
-  console.log("gamestate:'" + gamestate + "'");
+  log("gamestate:'" + gamestate + "'");
   client_sockets[client_sockets.indexOf(current_drawer)].finished = true;
   io.emit('broadcast', { type: 'round_start', drawer: current_drawer.id, blanks: blanks, time: time, word: current_word });
   round_timer_hndl = setTimeout(endRound, time);
@@ -241,7 +247,7 @@ function round_start(blanks, time) {
 function guessedWord(socket) {
   var sock_obj = arrayFind(client_sockets, socket.id);
   client_sockets[client_sockets.indexOf(sock_obj[0])].finished = true;
-  guess_order.push(socket);
+  guess_order.push({id:socket.id, round_points:0});
   io.emit('broadcast', { type: 'chat', msg: "", usr_id: socket.id, usr: socket.nickname, property: 'guessed' });
 
   if (allClientsFinished())
@@ -266,16 +272,19 @@ function endRound() {
   if (clients >= 2) //game can continue with 2 or more players..
   {
     calculatePoints();
-    broadcast_points();
-    //start new round...
+    
+    //cleanup post round.
     send_clear();
-
     reset_finish_state();
-    //reset their finish state for each client.
+    reset_round_score();
+    send_end_round(false);
+
+    //clear guess list order
+    guess_order = []; 
     
 
-    send_end_round(false);
-    broadcast_start();
+    next_round_start_hndl = setTimeout(broadcast_start, 10000); //start new round after 10 seconds.
+    
   } else //no clients are connected, we need to cleanup.
   {
     cleanup();
@@ -291,24 +300,25 @@ function calculatePoints() {
   guess_order.forEach((ele) => {
     var c_sock = arrayFind(client_sockets, ele.id);
     c_sock[0].score += max_point;
-    max_point /= 2;
+    c_sock[0].round_score = max_point;
+    max_point = Math.floor(max_point / 2);
     num_guessed += 1;
   });
 
-  current_drawer.score += (num_guessed * 150); //drawer score
-  guess_order = []; //clear guess list order;
-}
-
-function broadcast_points() {
-  io.emit('broadcast', { type: "points", data: client_sockets });
+  var drawer_rnd_score = (num_guessed * 150);
+  current_drawer.score += drawer_rnd_score; //drawer score
+  current_drawer.round_score = drawer_rnd_score;
+  
 }
 
 function cleanup() {
-  console.log("cleaning up server...");
+  log("cleaning up server...");
   clearTimeout(round_timer_hndl);
+  clearTimeout(next_round_start_hndl);
   send_clear();
   send_end_round(true);
   reset_finish_state();
+  reset_round_score();
   gamestate = "waiting";
   guess_order = [];
   drawer = 0;
@@ -321,4 +331,17 @@ function reset_finish_state()
   client_sockets.forEach((el) => {
     el.finished = false;
   });
+}
+
+function reset_round_score()
+{
+  client_sockets.forEach((el) => {
+    el.round_score = 0;
+  });
+}
+
+function log(message)
+{
+  if (logging)
+    console.log(message);
 }

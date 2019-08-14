@@ -6,11 +6,12 @@
     <li>(DONE) fix timer text clipping into side of canvas.</li>
     <li>(DONE) changelog modal rather than new page. update with button/background image.</li>
     <li>(DONE) green highlighting on player panel when word is guessed correctly.</li>
+    <li>(DONE) ranks based on point order</li>
     <li>avatars</li>
     <li>displaying (current word / point distributions) at the end of round.</li>
     <li>add more sound effects.</li>
     <li>implement checking for similar words to current word (close).</li>
-    <li>ranks based on point order</li>
+    
     <li>reveal blanks periodically.</li>
     <li>fill tool</li>
     <li>save drawings to scrollable panel for later viewing/copying with modal.</li>
@@ -21,15 +22,17 @@
     <li>(FIXED) endRound crashes server (round_timer needs interval cleared when clients drops below 2.)</li>
     <li>(FIXED) crash when user disconnects while another player is choosing a word.</li>
     <li>(FIXED) brush size is propogated to client on new round from previous drawer.</li>
+    <li>(FIXED) drawing at end of round is not cleared.</li>
+    <li>(FIXED) time sensitive bug when connecting that allows multiple updates of player_panel with same client</li>
     <li>sometimes word is null in 3 random chances.</li>
     <li>grey color makes cursor go behind/invisible</li>
-    <li>drawing at end of round is not cleared.</li>
     <li>clientside over the network small brush size random lines.</li>
+    
 </ul>
 
 
 <h3>additions(8/13/2019):</h3>
 <ul>
     <li>modal boxes to display gamestate (waiting, choosing, end round details)</li>
-    <li>now you can intentify yourself with a speical blue colored name in the player panel.</li>
+    <li>now you can identify yourself with a speical blue colored name in the player panel.</li>
 </ul>
