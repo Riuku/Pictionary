@@ -41,6 +41,8 @@ function receiveText(msg, user_name, user_id, property)
             fin = true;
         
         chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#CF18E7;'>'" + user_name + "' guessed the word!" + "</p>"
+
+        guessed_player_panel(user_id);
     }
     else if (property == 'finished')
     {
@@ -60,4 +62,29 @@ function receiveText(msg, user_name, user_id, property)
         toggle_bg = 0;
     
     
+}
+
+/**
+ * updates player panel background color to green when a user guesses a word correctly
+ * 
+ * id: the unique socket.id from the triggering player.
+ */
+function guessed_player_panel(id)
+{
+    document.getElementById(id).style.background = "green";
+}
+/**
+ * clears any modifications to the player panel at the start of a new round.
+ */
+function modify_player_panel()
+{
+    var player_panel = document.getElementById("player_panel");
+    var players = player_panel.querySelectorAll('.player_0, .player_1');
+    
+    players.forEach((el)=>{
+        if (el.className == 'player_1')
+            el.style.background = '#E3E3E3';
+        else if (el.className == 'player_0')
+            el.style.background = 'white';
+    });
 }

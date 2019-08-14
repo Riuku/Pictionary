@@ -109,8 +109,6 @@ function connect_client(socket, name) {
     io.emit('broadcast', { type: 'late_start', drawer: current_drawer.id, usr: socket.id, blanks: current_blanks_disp, time: ms_remaining });
 
   }
-  //always update every connecting player with all other connections.
-  //io.emit('broadcast', { type: "update_players", id: socket.id, data: client_sockets })
 }
 
 function disconnect_client(socket, client_id) {

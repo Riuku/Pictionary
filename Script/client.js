@@ -77,6 +77,7 @@ socket.on('broadcast', function (json) {
         round_start(json.words, json.drawer_id, json.drawer_name);
     else if (json.type == 'round_start') {
         ol_choosing.style.display = "none";
+        modify_player_panel();
         timer_blank_info(json.time, json.drawer, json.blanks, json.word);
     }
     else if (json.type == 'late_start')
@@ -89,9 +90,6 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'draw_hist') {
         if (socket.id == json.usr)
             update_draw_history(json.data);
-    }
-    else if (json.type == "update_players") {
-        //update_player_panel(json.data);
     }
     else if (json.type == "points") {
         update_points(json.data);
