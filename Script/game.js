@@ -10,16 +10,17 @@ var drawing_controls = document.getElementById("drawing_controls");
 
 var container = document.querySelector("#word_prompt_modal");
 var modal_content = container.querySelector("div.modal-content");
-function round_start(words, drawer)
+
+
+function round_start(words, drawer_id, drawer_name)
 {
     console.log("round start!");
-    if (socket.id == drawer)
+    if (socket.id == drawer_id) //you are the drawer.
     {
-        activeDraw = false;
-        fin = true;
-        current_round_words = words;
-        //send to other clients to let them know you are currently choosing a word.
-        socket.emit('server msg', 'chat:' + '\0' + 'choosing');
+        activeDraw = false; //make sure user is not drawing before round starts.
+        ctx.lineWidth = brushWidth; //set width back to client_side value. (ctx is updated through network updates?)
+        fin = true; //drawer is not allowed to chat to users who haven't yet guessed the word.
+        current_round_words = words; //save words for expiring random selection.
         
         
 
@@ -35,15 +36,20 @@ function round_start(words, drawer)
             modal_content.appendChild(button_input);
         });
         
-        select_word_timeout_handle = setTimeout(selectionExpired, 10000); //10 seconds to choose a word.
+        select_word_timeout_handle = setTimeout(selectionExpired, 30000); //30 seconds to choose a word.
     }
     else
     {
+        
+        ol_choosing.style.display = "block";
+        ol_choosing_text.innerHTML = drawer_name + " is choosing a word...";
+
         //you are not the drawer this round.
         current_drawer = false; //disallow drawing
         drawing_controls.style.visibility = "hidden"; //disable drawing controls
 
     }
+    ol_waiting.style.display = "none";
 }
 
 var word_panel = document.getElementById("word_panel");

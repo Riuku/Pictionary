@@ -1,0 +1,33 @@
+<h3>implementation plans:</h3>
+<ul>
+    <li>(DONE) -prevent drawer (drawing player) from guessing word themselves, or displaying chat to those who haven't
+        guessed yet.</li>
+    <li>fix player_panel UI bug with background color toggle.</li>
+    <li>avatars</li>
+    <li>displaying (current word / point distributions) at the end of round.</li>
+    <li>green highlighting on player panel when word is guessed correctly.</li>
+    <li>fix timer text clipping into side of canvas.</li>
+    <li>add more sound effects.</li>
+    <li>implement checking for similar words to current word (close).</li>
+    <li>ranks based on point order</li>
+    <li>changelog modal rather than new page. update with button/background image.</li>
+    <li>reveal blanks periodically.</li>
+    <li>fill tool</li>
+    <li>save drawings to scrollable panel for later viewing/copying with modal.</li>
+</ul>
+<h3>bugs:</h3>
+<ul>
+    <li>(FIXED) endRound crashes server (round_timer needs interval cleared when clients drops below 2.)</li>
+    <li>(FIXED) crash when user disconnects while another player is choosing a word.</li>
+    <li>(FIXED) brush size is propogated to client on new round from previous drawer.</li>
+    <li>sometimes word is nlil in 3 random chances.</li>
+    <li>grey color makes cursor go behind/invisible</li>
+    <li>drawing at end of round is not cleared.</li>
+    <li>clientside over the network small brush size random lines.</li>
+</ul>
+
+
+<h3>additions(8/13/2019):</h3>
+<ul>
+    <li>modal boxes to display gamestate (waiting, choosing, end round details)</li>
+</ul>

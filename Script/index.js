@@ -9,6 +9,12 @@ var brushMode = 0; //0 = brush 1 = fill
 var current_drawer = false;
 
 function init() {
+    $(document).ready(function(){
+   
+        $('#bug_log').load("bug_log.html");
+     
+     });
+
     // Get the canvas and the drawing context.
     canvas = document.getElementById("canvas");
     rect = canvas.getBoundingClientRect();
@@ -28,7 +34,6 @@ function init() {
     document.onmouseup = doc_mouseRelease;
 
     drawPreview();
-    //initCanvas();
     promptForName();
 }
 
@@ -39,6 +44,8 @@ var name_prompt = document.getElementById("name_prompt");
 function promptForName() {
     name_prompt_modal.style.display = "block";
 }
+
+
 
 function Play() {
     if (name_prompt.value != "") {
@@ -169,7 +176,10 @@ function doc_mouseRelease(e)
     }
     
 }
-
+function changeBrush()
+{
+    brushMode = 0;
+}
 
 function clearBoard(server_call) {
     if (!server_call)
@@ -181,7 +191,7 @@ function clearBoard(server_call) {
 }
 
 function updateRadius(e) {
-    ctx.lineWidth = document.getElementById("slider").value;
+    brushWidth = ctx.lineWidth = document.getElementById("slider").value;
     drawPreview();
 }
 
@@ -195,6 +205,8 @@ function send_draw_updates(type, start, end, color, width) {
     socket.emit('server msg', "imgData:" + JSON.stringify(json));
 
 }
+
+
 /* #region undo_handler */
 var ctrlHeld = false;
 window.addEventListener('keydown', (e) => {

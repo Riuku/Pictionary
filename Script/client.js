@@ -1,6 +1,16 @@
 var timer_time;
 var timer_tick_handle;
 var timer_end_handle;
+
+var gamestate;
+
+var ol_waiting = document.getElementById("overlay_waiting");
+var ol_waiting_text = document.getElementById("ol_waiting");
+ol_waiting_text.innerHTML = "Waiting for more players to join...";
+
+var ol_choosing = document.getElementById("overlay_choosing");
+var ol_choosing_text = document.getElementById("ol_choosing");
+
 var socket = io.connect("http://73.98.154.126:8080");
 socket.on('disconnect', function () {
     dconn();
@@ -25,9 +35,29 @@ socket.on('broadcast', function (json) {
         {
             //play lobby sound effect if connection did not originate from self.
             if (socket.id != json.id)
+            {
                 enter_lobby();
+            } else
+            {
+                gamestate = json.gamestate;
+                console.log("gamestate:'" + gamestate + "'");
+                if (json.gamestate == "waiting")
+                {
+                    ol_waiting.style.display = "block";
+
+                } else if (json.gamestate == "choosing")
+                {
+                    ol_choosing_text.innerHTML = json.drawer_name + " is choosing a word...";
+                    ol_choosing.style.display = "block";
+                    
+                } else if (json.gamestate == "end_round")
+                {
+
+                }
+
+                playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
+            }
             
-            playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
         }
         else if (json.subtype == "disconnect")
             playerLeft(json.name, json.id);
@@ -37,32 +67,47 @@ socket.on('broadcast', function (json) {
     else if (json.type == 'chat')
         receiveText(json.msg, json.usr, json.usr_id, json.property);
     else if (json.type == 'init')
-        round_start(json.words, json.drawer);
+        round_start(json.words, json.drawer_id, json.drawer_name);
     else if (json.type == 'round_start') {
-
+        ol_choosing.style.display = "none";
         timer_blank_info(json.time, json.drawer, json.blanks, json.word);
     }
     else if (json.type == 'late_start')
     {
-        if (socket.id == json.usr)
+        if (socket.id == json.usr && gamestate == "running")
+        {
             timer_blank_info(json.time, json.drawer, json.blanks, json.word);
+        }
     }
     else if (json.type == 'draw_hist') {
         if (socket.id == json.usr)
             update_draw_history(json.data);
     }
     else if (json.type == "update_players") {
-        if (socket.id == json.usr)
-            update_player_panel(json.data);
+        update_player_panel(json.data);
     }
     else if (json.type == "points") {
         update_points(json.data);
     }
     else if (json.type == "end_round")
     {
+        if (json.permanence)
+        {
+            word_prompt_modal.style.display = "none";
+            ol_choosing.style.display = "none";
+            ol_waiting.style.display = "block";
+
+            display_blanks('');
+            current_drawer = false;
+            drawing_controls.style.visibility = "hidden";
+            clearTimeout(select_word_timeout_handle);
+            
+            
+        }
+        
         fin = false;
-        clearTimeout(timer_end_handle);
         round_timer_end();
+        
     }
 });
 
@@ -110,8 +155,8 @@ function update_draw_history(history) {
 var timer_disp_canvas = document.getElementById("timer_disp");
 
 var time_ctx = timer_disp_canvas.getContext('2d');
-time_ctx.font = "170px Comic Sans MS";
-time_ctx.fillStyle = "red";
+time_ctx.font = "155px Comic Sans MS";
+time_ctx.fillStyle = "black";
 time_ctx.textAlign = "center";
 
 function update_timer() {
@@ -123,7 +168,10 @@ function update_timer() {
 
 function round_timer_end() {
     //console.log("TIME END");
+    clearTimeout(timer_end_handle);
     clearInterval(timer_tick_handle);
+    time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
+
 }
 /* #endregion TIMER*/
 
@@ -166,6 +214,7 @@ function update_points(client_data) {
 
 function timer_blank_info(current_time, drawer, blanks, word)
 {
+    console.log("updating timer info");
     timer_time = Math.round(current_time / 1000);
     update_timer();
     timer_tick_handle = setInterval(update_timer, 1000);
@@ -176,4 +225,14 @@ function timer_blank_info(current_time, drawer, blanks, word)
     } else {
         display_blanks(blanks);
     }
+}
+function show_modal(modal_name)
+{
+    var modal = document.getElementById(modal_name);
+    modal.style.display = "block";
+}
+function close_modal(modal_name)
+{
+    var modal = document.getElementById(modal_name);
+    modal.style.display = "none";
 }

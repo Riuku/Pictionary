@@ -42,16 +42,11 @@ function receiveText(msg, user_name, user_id, property)
         
         chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#CF18E7;'>'" + user_name + "' guessed the word!" + "</p>"
     }
-    else if (property == 'choosing')
-    {
-        chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#800080;'>'" + user_name + "' is currently choosing a word!" + "</p>"
-
-    }
     else if (property == 'finished')
     {
         if (fin)
         {
-            chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#19BBE6;'>'" + user_name + ": " + msg + "</p>"
+            chatWindow.innerHTML += "<p class='chat_msg_" + toggle_bg + "' style='color:#19BBE6;'>" + user_name + ": " + msg + "</p>"
         }
     }
 

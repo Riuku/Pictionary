@@ -7,4 +7,4 @@ If you want to play the game, you will have to change the IP address and port fo
 
 If you notice anything that can be improved leave a comment.
 
-[Todo List](todo)
+[Bug Log](/view/bug_log.html)
