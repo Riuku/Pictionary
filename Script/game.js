@@ -36,7 +36,7 @@ function round_start(words, drawer_id, drawer_name)
             modal_content.appendChild(button_input);
         });
         
-        select_word_timeout_handle = setTimeout(selectionExpired, 30000); //30 seconds to choose a word.
+        select_word_timeout_handle = setTimeout(selectionExpired, 10000); //10 seconds to choose a word.
     }
     else
     {

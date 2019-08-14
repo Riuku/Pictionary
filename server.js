@@ -21,7 +21,7 @@ var current_drawer = { name: "undefined" };
 var round_timer_hndl;
 var roundTime = 60000; //60 seconds
 var start_time;
-
+var current_last_rank = 1;
 
 
 fs.readFile('word_list.txt', 'utf-8', (err, data) => {
@@ -84,13 +84,13 @@ http.listen(PORT, function () {
 function connect_client(socket, name) {
   clients++;
   socket.nickname = name;
-  client_sockets.push({ id: socket.id, name: name, rank: 1, score: 0, finished: false });
+  client_sockets.push({ id: socket.id, name: name, rank: current_last_rank, score: 0, finished: false });
 
   console.log("[" + name + ", " + client_id + "] connected!");
   client_id++;
   display_client_list();
 
-  io.emit('broadcast', { type: "CS", subtype: "connect", name: name, id: socket.id, gamestate: gamestate, drawer_name: current_drawer.name });
+  io.emit('broadcast', { type: "CS", subtype: "connect", name: name, id: socket.id, gamestate: gamestate, drawer_name: current_drawer.name, last_rank:current_last_rank, player_data:client_sockets });
   broadcast_chat(socket, '', 'connect');
 
 
@@ -110,7 +110,7 @@ function connect_client(socket, name) {
 
   }
   //always update every connecting player with all other connections.
-  io.emit('broadcast', { type: "update_players", usr: socket.id, data: client_sockets })
+  //io.emit('broadcast', { type: "update_players", id: socket.id, data: client_sockets })
 }
 
 function disconnect_client(socket, client_id) {

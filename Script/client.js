@@ -33,12 +33,18 @@ socket.on('broadcast', function (json) {
         console.log("got CS message! of subtype: " + json.subtype);
         if (json.subtype == "connect")
         {
-            //play lobby sound effect if connection did not originate from self.
+            
             if (socket.id != json.id)
             {
+                //play lobby sound effect if connection did not originate from self.
                 enter_lobby();
+
+                //add any incomming connections
+                playerJoin(false, json.name, json.id, 0, json.last_rank);
             } else
             {
+                //self connection
+
                 gamestate = json.gamestate;
                 console.log("gamestate:'" + gamestate + "'");
                 if (json.gamestate == "waiting")
@@ -54,8 +60,9 @@ socket.on('broadcast', function (json) {
                 {
 
                 }
-
-                playerJoin(json.name, json.id, 0, 1); //score:0, rank:1
+                playerJoin(true, json.name, json.id, 0, json.last_rank); //add self
+                update_player_panel(json.player_data); //add pre-existing clients
+                
             }
             
         }
@@ -84,7 +91,7 @@ socket.on('broadcast', function (json) {
             update_draw_history(json.data);
     }
     else if (json.type == "update_players") {
-        update_player_panel(json.data);
+        //update_player_panel(json.data);
     }
     else if (json.type == "points") {
         update_points(json.data);
@@ -176,13 +183,21 @@ function round_timer_end() {
 /* #endregion TIMER*/
 
 var player_panel = document.getElementById("player_panel");
-function playerJoin(name, id, score, rank) {
+function playerJoin(self, name, id, score, rank) {
+
+    var name_color = "black";
+    if (self)
+    {
+        name = name + " (you)";
+        name_color = "blue";
+    }
+
     console.log("adding player[" + name + ", " + id + "] to player panel");
     player_panel.innerHTML +=
         "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
         <div class=\"rank\">#" + rank + "</div>\
         <div class=\"info\">\
-        <div class=\"name\">" + name + "</div>\
+        <div class=\"name\" style=\"color:" + name_color + ";\">" + name + "</div>\
         <div class=\"score\">Points: " + score + "</div></div></div>";
 
     if (player_toggle == 0)
@@ -200,9 +215,9 @@ function playerLeft(name, id) {
 
 function update_player_panel(player_data) {
     for (var i = 0; i < player_data.length; i++) {
-        var player = player_data[i];
-        if (player.id != socket.id) {
-            playerJoin(player.name, player.id, player.score, player.rank);
+        var conn_player = player_data[i];
+        if (conn_player.id != socket.id) {
+            playerJoin(false, conn_player.name, conn_player.id, conn_player.score, conn_player.rank);
         }
     }
 }
