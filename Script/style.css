@@ -176,7 +176,7 @@
     align-content: flex-start;
     width: 200px;
 }
-.player
+.player_1, .player_0
 {
     position: relative;
     flex: 0 0 auto;
@@ -185,12 +185,12 @@
     justify-content: space-between;
     align-items: center;
 }
-.player_panel :nth-child(even)
+.player_1
 {
     background:#E3E3E3;
 }
 
-.player_panel :nth-child(odd)
+.player_0
 {
     background: white;
 }

@@ -1,7 +1,7 @@
 var timer_time;
 var timer_tick_handle;
 var timer_end_handle;
-
+var player_toggle = 1;
 var gamestate;
 
 var ol_waiting = document.getElementById("overlay_waiting");
@@ -155,14 +155,14 @@ function update_draw_history(history) {
 var timer_disp_canvas = document.getElementById("timer_disp");
 
 var time_ctx = timer_disp_canvas.getContext('2d');
-time_ctx.font = "155px Comic Sans MS";
+time_ctx.font = "120px Comic Sans MS";
 time_ctx.fillStyle = "black";
 time_ctx.textAlign = "center";
 
 function update_timer() {
     //console.log("current timer: " + timer_time);
     time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
-    time_ctx.fillText(timer_time, 160, 160);
+    time_ctx.fillText(timer_time, 160, 117);
     timer_time -= 1;
 }
 
@@ -179,11 +179,16 @@ var player_panel = document.getElementById("player_panel");
 function playerJoin(name, id, score, rank) {
     console.log("adding player[" + name + ", " + id + "] to player panel");
     player_panel.innerHTML +=
-        "<div id=\"" + id + "\" class=\"player\">\
+        "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
         <div class=\"rank\">#" + rank + "</div>\
         <div class=\"info\">\
         <div class=\"name\">" + name + "</div>\
         <div class=\"score\">Points: " + score + "</div></div></div>";
+
+    if (player_toggle == 0)
+        player_toggle = 1;
+    else
+        player_toggle = 0;
 }
 
 function playerLeft(name, id) {

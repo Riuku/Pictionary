@@ -39,36 +39,6 @@ router.get('/bug_log.html', function (req, res) {
   res.sendFile(path.join(__dirname + '/view/bug_log.html'));
 });
 
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/paintcan.png'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/trashcan.jpg'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/brush.png'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/debug.png'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/favicon.ico'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/muted.jpg'));
-});
-
-router.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + '/unmute.jpg'));
-});
-
-
-
 app.use(express.static(__dirname + '/Script'));
 app.use(express.static(__dirname + '/images'));
 app.use(express.static(__dirname + '/sounds'));
