@@ -1,4 +1,3 @@
-var socket = io.connect("http://73.98.154.126:8080");
 var word_prompt_modal = document.getElementById("word_prompt_modal");
 
 var select_word_timeout_handle;

@@ -1,4 +1,3 @@
-var socket = io.connect("http://73.98.154.126:8080");
 var chatbox = document.getElementById('chatbox');
 var chatWindow = document.getElementById('chatWindow');
 var toggle_bg = 0;
