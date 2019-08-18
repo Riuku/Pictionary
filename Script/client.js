@@ -11,7 +11,7 @@ ol_waiting_text.innerHTML = "Waiting for more players to join...";
 var ol_choosing = document.getElementById("overlay_choosing");
 var ol_choosing_text = document.getElementById("ol_choosing");
 
-var socket = io.connect("http://73.98.154.126:8080");
+var socket = io.connect("http://localhost:8080");
 socket.on('disconnect', function () {
     dconn();
 })
