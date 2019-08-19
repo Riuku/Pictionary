@@ -58,25 +58,50 @@ function Play() {
 var previousPoint = {x:-1,y:-1};
 var startPoint = {x:-1,y:-1};
 function startDraw(e) {
-    console.log("activeDraw: " + activeDraw);
-    if ((e.which == 1 || activeDraw) && current_drawer) //detects left click on chrome browsers
+    if (current_drawer)
     {
-        //console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
-        activeDraw = true;
-
-        // Create a new path (with the current stroke color and stroke thickness).
-        ctx.beginPath();
+        if ((e.which == 1 || activeDraw) && brushMode == 0) //detects left click on chrome browsers
+        {
+            //console.log("event click: (x,y): (" + e.pageX + ", " + e.pageY + ")");
+            activeDraw = true;
     
-        // Put the pen down where the mouse is positioned.
-        var x = e.offsetX;
-        var y = e.offsetY;
+            // Create a new path (with the current stroke color and stroke thickness).
+            ctx.beginPath();
+        
+            // Put the pen down where the mouse is positioned.
+            var x = e.offsetX;
+            var y = e.offsetY;
+    
+            ctx.moveTo(x, y);
+            //console.log("canvas position: (x,y): (" + x + ", " + y + ")");
+            //store previous point for sending network updates
+            previousPoint = startPoint = {x: x, y: y};
+        } else if (e.type == 'mousedown' && brushMode == 1)
+        {
 
-        ctx.moveTo(x, y);
-        //console.log("canvas position: (x,y): (" + x + ", " + y + ")");
-        //store previous point for sending network updates
-        previousPoint = startPoint = {x: x, y: y};
+            
+            //get mouse positioning relative to control.
+            var x = e.offsetX;
+            var y = e.offsetY;
+
+            var pixel = ctx.getImageData(x,y,1,1).data;
+            var t_color = "#" + ("000000" + rgbToHex(pixel[0], pixel[1], pixel[2])).slice(-6);
+            if (t_color != brushColor)
+            {
+                Fill_Region(x,y);
+                console.log("fill tool!");
+            }
+            
+        }
     }
     
+    
+}
+
+function rgbToHex(r, g, b) {
+    if (r > 255 || g > 255 || b > 255)
+        throw "Invalid color component";
+    return ((r << 16) | (g << 8) | b).toString(16);
 }
 
 function draw(e) {
@@ -88,7 +113,7 @@ function draw(e) {
         var x = e.offsetX;
         var y = e.offsetY;
         //console.log("stroke to: (" + x + ", " + y + ")");
-        if (activeDraw && brushMode == 0) {
+        if (activeDraw) {
     
             if (x > 0 && x < rect.width && y < rect.height && y > 0) {
                 ctx.lineTo(x, y);
@@ -100,13 +125,15 @@ function draw(e) {
             }
     
     
-        } else if (activeDraw && brushMode == 1) {
-            //fill mode disabled currently.
         }
     }
     
 }
 
+function Fill_Region(x,y)
+{
+
+}
 
 function rgbToHex(r, g, b) {
     if (r > 255 || g > 255 || b > 255)
@@ -176,10 +203,31 @@ function doc_mouseRelease(e)
     }
     
 }
-function changeBrush()
+
+var fill_button = document.getElementById("fill");
+var brush_button = document.getElementById("brush");
+function change_Tool(type)
 {
-    brushMode = 0;
+    if (type == "brush")
+    {
+        brush_button.disabled = true;
+        brush_button.style.backgroundColor = 'grey';
+
+        fill_button.disabled = false;
+        fill_button.style.backgroundColor = 'white';
+        brushMode = 0;
+    }
+    else if (type == "fill")
+    {
+        fill_button.disabled = true;
+        fill_button.style.backgroundColor = 'grey';
+
+        brush_button.disabled = false;
+        brush_button.style.backgroundColor = 'white';
+        brushMode = 1;
+    }
 }
+
 
 function clearBoard(server_call) {
     if (!server_call)
