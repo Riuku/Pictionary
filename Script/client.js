@@ -14,7 +14,7 @@ var ol_choosing_text = document.getElementById("ol_choosing");
 
 var ol_end = document.getElementById("overlay_end");
 var ol_end_text = document.getElementById("ol_end");
-var socket = io.connect("http://73.98.154.126:8080");
+var socket = io.connect("http://localhost:8080");
 socket.on('disconnect', function () {
     dconn();
 })

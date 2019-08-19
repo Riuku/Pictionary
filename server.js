@@ -85,7 +85,7 @@ io.on('connection', function (socket) {
 });
 
 http.listen(PORT, function () {
-  log('listening on 73.98.154.126:' + PORT);
+  log('listening on localhost:' + PORT);
 });
 
 function connect_client(socket, name) {
