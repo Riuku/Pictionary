@@ -11,6 +11,9 @@ ol_waiting_text.innerHTML = "Waiting for more players to join...";
 var ol_choosing = document.getElementById("overlay_choosing");
 var ol_choosing_text = document.getElementById("ol_choosing");
 
+
+var ol_end = document.getElementById("overlay_end");
+var ol_end_text = document.getElementById("ol_end");
 var socket = io.connect("http://73.98.154.126:8080");
 socket.on('disconnect', function () {
     dconn();
@@ -31,40 +34,34 @@ socket.on('broadcast', function (json) {
     }
     else if (json.type == 'CS') {
         console.log("got CS message! of subtype: " + json.subtype);
-        if (json.subtype == "connect")
-        {
-            
-            if (socket.id != json.id)
-            {
+        if (json.subtype == "connect") {
+
+            if (socket.id != json.id) {
                 //play lobby sound effect if connection did not originate from self.
                 enter_lobby();
 
                 //add any incomming connections
                 playerJoin(false, json.name, json.id, 0, json.last_rank);
-            } else
-            {
+            } else {
                 //self connection
 
                 gamestate = json.gamestate;
                 console.log("gamestate:'" + gamestate + "'");
-                if (json.gamestate == "waiting")
-                {
+                if (json.gamestate == "waiting") {
                     ol_waiting.style.display = "block";
 
-                } else if (json.gamestate == "choosing")
-                {
+                } else if (json.gamestate == "choosing") {
                     ol_choosing_text.innerHTML = json.drawer_name + " is choosing a word...";
                     ol_choosing.style.display = "block";
-                    
-                } else if (json.gamestate == "end_round")
-                {
 
+                } else if (json.gamestate == "end_round") {
+                    display_end_of_round(json.player_data, json.curr_word);
                 }
                 playerJoin(true, json.name, json.id, 0, json.last_rank); //add self
                 update_player_panel(json.player_data); //add pre-existing clients
-                
+
             }
-            
+
         }
         else if (json.subtype == "disconnect")
             playerLeft(json.name, json.id);
@@ -77,13 +74,11 @@ socket.on('broadcast', function (json) {
         round_start(json.words, json.drawer_id, json.drawer_name);
     else if (json.type == 'round_start') {
         ol_choosing.style.display = "none";
-        modify_player_panel();
+        modify_player_panel(json.drawer);
         timer_blank_info(json.time, json.drawer, json.blanks, json.word);
     }
-    else if (json.type == 'late_start')
-    {
-        if (socket.id == json.usr && gamestate == "running")
-        {
+    else if (json.type == 'late_start') {
+        if (socket.id == json.usr && gamestate == "running") {
             timer_blank_info(json.time, json.drawer, json.blanks, json.word);
         }
     }
@@ -91,28 +86,30 @@ socket.on('broadcast', function (json) {
         if (socket.id == json.usr)
             update_draw_history(json.data);
     }
-    else if (json.type == "end_round")
-    {
-        if (json.permanence)
-        {
+    else if (json.type == "end_round") {
+        if (json.permanence) {
             word_prompt_modal.style.display = "none";
             ol_choosing.style.display = "none";
+            ol_end.style.dispaly = "none";
             ol_waiting.style.display = "block";
-
+            
             display_blanks('');
             current_drawer = false;
             drawing_controls.style.visibility = "hidden";
             clearTimeout(select_word_timeout_handle);
+
+
+        } else {
+
             
-            
-        } else
-        {
+
+            display_end_of_round(json.data, json.curr_word);
             update_client_data(json.data);
         }
-        
+
         fin = false;
         round_timer_end();
-        
+
     }
 });
 
@@ -184,32 +181,31 @@ var player_panel = document.getElementById("player_panel");
 function playerJoin(self, name, id, score, rank) {
 
     var element = document.getElementById(id);
-    if (element === null)
-    {
+    if (element === null) {
         var name_color = "black";
-        if (self)
-        {
+        if (self) {
             name = name + " (you)";
             name_color = "blue";
         }
-    
-    
-        
-        console.log("self: " + self +" adding player[" + name + ", " + id + "] to player panel");
+
+
+
+        console.log("self: " + self + " adding player[" + name + ", " + id + "] to player panel");
         player_panel.innerHTML +=
             "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
             <div class=\"rank\">#" + rank + "</div>\
+            <div class=\"drawer_icon\"></div>\
             <div class=\"info\">\
             <div class=\"name\" style=\"color:" + name_color + ";\">" + name + "</div>\
             <div class=\"score\">Points: " + score + "</div></div></div>";
-    
+
         if (player_toggle == 0)
             player_toggle = 1;
         else
             player_toggle = 0;
     } else
         console.log("we've hit a race condition scenario!");
-    
+
 }
 
 function playerLeft(name, id) {
@@ -231,7 +227,7 @@ function update_player_panel(player_data) {
 function update_client_data(client_data) {
 
     //sort scores in descending order.
-    client_data.sort((a,b)=>{
+    client_data.sort((a, b) => {
         return b.score - a.score;
     });
     var rank = 1;
@@ -242,8 +238,7 @@ function update_client_data(client_data) {
         score_element.innerHTML = "Points: " + el.score;
 
         var rank_element = container.querySelector('.rank');
-        if (previous != el.score)
-        {
+        if (previous != el.score) {
             rank++;
         }
         previous = el.score;
@@ -254,8 +249,21 @@ function update_client_data(client_data) {
 
 }
 
-function timer_blank_info(current_time, drawer, blanks, word)
-{
+function display_end_of_round(client_data, word) {
+    //sort round_scores in descending order.
+    client_data.sort((a, b) => {
+        return b.round_score - a.round_score;
+    });
+
+    ol_end_text.innerHTML = "<p>Word was: " + word + "</p>"
+    client_data.forEach((el)=>
+    {
+        ol_end_text.innerHTML += "<p>" + el.name + "\t" + el.round_score + "</p>"
+    });
+    ol_end.style.display = "block";
+}
+
+function timer_blank_info(current_time, drawer, blanks, word) {
     console.log("updating timer info");
     timer_time = Math.round(current_time / 1000);
     update_timer();
@@ -268,13 +276,11 @@ function timer_blank_info(current_time, drawer, blanks, word)
         display_blanks(blanks);
     }
 }
-function show_modal(modal_name)
-{
+function show_modal(modal_name) {
     var modal = document.getElementById(modal_name);
     modal.style.display = "block";
 }
-function close_modal(modal_name)
-{
+function close_modal(modal_name) {
     var modal = document.getElementById(modal_name);
     modal.style.display = "none";
 }

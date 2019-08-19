@@ -204,6 +204,20 @@
     line-height: 30px;
     text-align: center;
 }
+
+.drawer_icon
+{
+    
+    flex: 1 1 auto;
+    background: url('../brush.png');
+    background-size: 29px;
+    background-repeat: no-repeat;
+    height: 34px;
+    width: 34px;
+    visibility: hidden;
+    
+}
+
 .info
 {
 	flex: 1 1 auto;

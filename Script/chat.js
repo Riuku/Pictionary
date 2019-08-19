@@ -74,8 +74,9 @@ function guessed_player_panel(id)
 }
 /**
  * clears any modifications to the player panel at the start of a new round.
+ * also sets the drawer_icon for the drawer and resets the visibility of the previous drawer.
  */
-function modify_player_panel()
+function modify_player_panel(current_drawer_id)
 {
     var player_panel = document.getElementById("player_panel");
     var players = player_panel.querySelectorAll('.player_0, .player_1');
@@ -85,5 +86,11 @@ function modify_player_panel()
             el.style.background = '#E3E3E3';
         else if (el.className == 'player_0')
             el.style.background = 'white';
+
+        var icon = el.querySelector('.drawer_icon');
+        if (el.id == current_drawer_id)
+            icon.style.visibility = "visible";
+        else
+            icon.style.visibility = "hidden";
     });
 }

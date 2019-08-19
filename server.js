@@ -97,7 +97,7 @@ function connect_client(socket, name) {
   client_id++;
   //display_client_list();
 
-  io.emit('broadcast', { type: "CS", subtype: "connect", name: name, id: socket.id, gamestate: gamestate, drawer_name: current_drawer.name, last_rank:current_last_rank, player_data:client_sockets });
+  io.emit('broadcast', { type: "CS", subtype: "connect", name: name, id: socket.id, gamestate: gamestate, drawer_name: current_drawer.name, last_rank:current_last_rank, player_data:client_sockets, curr_word:current_word });
   broadcast_chat(socket, '', 'connect');
 
 
@@ -156,7 +156,7 @@ function send_clear() {
 }
 
 function send_end_round(permanence) {
-  io.emit('broadcast', { type: 'end_round',  permanence:permanence, data:client_sockets});
+  io.emit('broadcast', { type: 'end_round',  permanence:permanence, data:client_sockets, curr_word:current_word});
 }
 
 function broadcast_chat(socket, mesg, property) {
@@ -274,15 +274,15 @@ function endRound() {
     calculatePoints();
     
     //cleanup post round.
-    send_clear();
+    //send_clear();
     reset_finish_state();
-    reset_round_score();
+    
     send_end_round(false);
-
+    reset_round_score();
     //clear guess list order
     guess_order = []; 
     
-
+    gamestate = "end_round"
     next_round_start_hndl = setTimeout(broadcast_start, 10000); //start new round after 10 seconds.
     
   } else //no clients are connected, we need to cleanup.
