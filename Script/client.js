@@ -90,7 +90,7 @@ socket.on('broadcast', function (json) {
         if (json.permanence) {
             word_prompt_modal.style.display = "none";
             ol_choosing.style.display = "none";
-            ol_end.style.dispaly = "none";
+            ol_end.style.display = "none";
             ol_waiting.style.display = "block";
             
             display_blanks('');
