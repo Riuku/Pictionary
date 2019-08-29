@@ -36,7 +36,7 @@ socket.on('broadcast', function (json) {
                 arr.push(json.buf[i]);
             
             var reconstructed_buf = Uint8ClampedArray.from(arr);
-            Redraw(reconstructed_buf, json.dx, json.dy, json.w, json.h);
+            Redraw(reconstructed_buf);//, json.dx, json.dy, json.w, json.h);
         }
 
     }
@@ -159,7 +159,7 @@ function update_draw_history(history) {
             srv_drawPath(piece.start.x, piece.start.y, piece.end.x, piece.end.y, piece.color, piece.width);
         } else if (piece.img_type == "fill")
         {
-            Redraw(piece.buf, piece.dx, piece.dy, piece.w, piece.h);
+            Redraw(piece.buf);//, piece.dx, piece.dy, piece.w, piece.h);
         }
     }
 }

@@ -156,7 +156,7 @@ function broadcast_image(json, source_client_id) {
   } else
   {
     log('sending fill');
-    io.emit('broadcast', { source: source_client_id, type: "imgData", img_type: type, buf:json.buf, dx:json.dx, dy:json.dy, w:json.w, h:json.h});
+    io.emit('broadcast', { source: source_client_id, type: "imgData", img_type: type, buf:json.buf});//, dx:json.dx, dy:json.dy, w:json.w, h:json.h});
     
   }
 }

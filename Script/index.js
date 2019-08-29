@@ -90,14 +90,15 @@ function startDraw(e) {
             var start_color = "#" + ("000000" + rgbToHex(image_buffer[pixel_pos], image_buffer[pixel_pos+1], image_buffer[pixel_pos+2])).slice(-6);
 
             var new_ctx = Fill_R(x, y, start_color, image_buffer);
-            var smaller_buf = new Uint8ClampedArray(new_ctx.w * new_ctx.h * 4);
-            let start = (new_ctx.dy * canvas.width + new_ctx.dx) * 4;
-            let offset = (new_ctx.h * new_ctx.w) * 4;
-            smaller_buf = new_ctx.buf.slice(start, start + offset);
+            //var smaller_buf = new Uint8ClampedArray(new_ctx.w * new_ctx.h * 4);
+            //let start = (new_ctx.dy * canvas.width + new_ctx.dx) * 4;
+            //let offset = (new_ctx.h * new_ctx.w) * 4;
+            //smaller_buf = new_ctx.buf.slice(start, start + offset);
 
-            Redraw(smaller_buf, new_ctx.dx, new_ctx.dy, new_ctx.w, new_ctx.h);
+            //Redraw(smaller_buf, new_ctx.dx, new_ctx.dy, new_ctx.w, new_ctx.h);
+            Redraw(new_ctx.buf);//, new_ctx.dx, new_ctx.dy, new_ctx.w, new_ctx.h);
 
-            let json = {img_type: "fill", buf:smaller_buf, dx:new_ctx.dx, dy:new_ctx.dy, w:new_ctx.w, h:new_ctx.h};
+            let json = {img_type: "fill", buf:new_ctx.buf};//buf:smaller_buf, dx:new_ctx.dx, dy:new_ctx.dy, w:new_ctx.w, h:new_ctx.h};
             send_draw_updates(JSON.stringify(json));
 
         }
@@ -151,10 +152,12 @@ function hexToRgb(hex) {
     return {R:r,G:g,B:b};
   }
 
-function Redraw(buffer, dx,dy,w,h)
+function Redraw(buffer)//, dx,dy,w,h)
 {
-    let imageData = new ImageData(buffer, w, h);
-    ctx.putImageData(imageData,dx,dy);
+    //let imageData = new ImageData(buffer, w, h);
+    //ctx.putImageData(imageData,dx,dy);
+    let imageData = new ImageData(buffer, canvas.width, canvas.height);
+    ctx.putImageData(imageData,0,0);
     log("successfully redrew canvas");
     
 }
@@ -219,7 +222,7 @@ function Fill_R(x,y, start_color, image_buffer)
             y += 1
         }  
     }
-    return {buf:image_buffer, dx:left, dy:top, w:right, h:bottom};
+    return {buf:image_buffer}; //, dx:left, dy:top, w:right, h:bottom};
 }
 
 function get_pixel_color(x, y, image_buffer)
