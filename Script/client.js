@@ -30,13 +30,11 @@ socket.on('broadcast', function (json) {
         }
         else if (json.img_type == "fill")
         {
-
-            var arr = [];
-            for (var i in json.buf)
-                arr.push(json.buf[i]);
-            
-            var reconstructed_buf = Uint8ClampedArray.from(arr);
-            Redraw(reconstructed_buf);//, json.dx, json.dy, json.w, json.h);
+            var img = new Image;
+            img.onload = function(){
+                ctx.drawImage(img,0,0); // Or at whatever offset you like
+            };
+            img.src = json.DataURL;
         }
 
     }

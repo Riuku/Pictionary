@@ -98,7 +98,8 @@ function startDraw(e) {
             //Redraw(smaller_buf, new_ctx.dx, new_ctx.dy, new_ctx.w, new_ctx.h);
             Redraw(new_ctx.buf);//, new_ctx.dx, new_ctx.dy, new_ctx.w, new_ctx.h);
 
-            let json = {img_type: "fill", buf:new_ctx.buf};//buf:smaller_buf, dx:new_ctx.dx, dy:new_ctx.dy, w:new_ctx.w, h:new_ctx.h};
+            var dataURL = canvas.toDataURL();
+            let json = {img_type: "fill", DataURL:dataURL};//buf:smaller_buf, dx:new_ctx.dx, dy:new_ctx.dy, w:new_ctx.w, h:new_ctx.h};
             send_draw_updates(JSON.stringify(json));
 
         }
