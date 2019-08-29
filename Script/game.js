@@ -14,7 +14,8 @@ var modal_content = container.querySelector("div.modal-content");
 function round_start(words, drawer_id, drawer_name)
 {
     clearBoard(true); //clear board before selecting a word.
-    console.log("round start!");
+    
+    log("round start!");
     ol_end.style.display = "none";
     if (socket.id == drawer_id) //you are the drawer.
     {
@@ -62,7 +63,7 @@ function set_round_word(word)
     //send to other clients to let them know you are currently drawing.
     socket.emit('server msg', 'chat:' + '\0' + 'drawing');
 
-    console.log("chosen word: " + word);
+    log("chosen word: " + word);
     word_prompt_modal.style.display = "none"; //close word prompt
 
     modal_content.innerHTML = ""; //clear previous modal content.

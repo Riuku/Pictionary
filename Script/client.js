@@ -20,20 +20,28 @@ socket.on('disconnect', function () {
 })
 
 socket.on('broadcast', function (json) {
-    //console.log("recieved broadcast msg of type: '" + json.type + "'");
-    if (json.type == "imgData") {
+    //log("recieved broadcast msg of type: '" + json.type + "'");
+    if (json.type == "imgData" && json.source != socket.id) {
 
         if (json.img_type == "point") {
-            //console.log("drawing point");
             srv_drawPoint(json.start.x, json.start.y, json.color, json.width);
         } else if (json.img_type == "path") {
-            //console.log("drawing path");
             srv_drawPath(json.start.x, json.start.y, json.end.x, json.end.y, json.color, json.width);
+        }
+        else if (json.img_type == "fill")
+        {
+
+            var arr = [];
+            for (var i in json.buf)
+                arr.push(json.buf[i]);
+            
+            var reconstructed_buf = Uint8ClampedArray.from(arr);
+            Redraw(reconstructed_buf, json.dx, json.dy, json.w, json.h);
         }
 
     }
     else if (json.type == 'CS') {
-        console.log("got CS message! of subtype: " + json.subtype);
+        log("got CS message! of subtype: " + json.subtype);
         if (json.subtype == "connect") {
 
             if (socket.id != json.id) {
@@ -46,7 +54,7 @@ socket.on('broadcast', function (json) {
                 //self connection
 
                 gamestate = json.gamestate;
-                console.log("gamestate:'" + gamestate + "'");
+                log("gamestate:'" + gamestate + "'");
                 if (json.gamestate == "waiting") {
                     ol_waiting.style.display = "block";
 
@@ -114,7 +122,7 @@ socket.on('broadcast', function (json) {
 });
 
 window.addEventListener('beforeunload', function (event) {
-    console.log("closing!");
+    log("closing!");
     dconn();
 })
 
@@ -149,6 +157,9 @@ function update_draw_history(history) {
             srv_drawPoint(piece.start.x, piece.start.y, piece.color, piece.width);
         } else if (piece.img_type == "path") {
             srv_drawPath(piece.start.x, piece.start.y, piece.end.x, piece.end.y, piece.color, piece.width);
+        } else if (piece.img_type == "fill")
+        {
+            Redraw(piece.buf, piece.dx, piece.dy, piece.w, piece.h);
         }
     }
 }
@@ -162,14 +173,12 @@ time_ctx.fillStyle = "black";
 time_ctx.textAlign = "center";
 
 function update_timer() {
-    //console.log("current timer: " + timer_time);
     time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
     time_ctx.fillText(timer_time, 160, 117);
     timer_time -= 1;
 }
 
 function round_timer_end() {
-    //console.log("TIME END");
     clearTimeout(timer_end_handle);
     clearInterval(timer_tick_handle);
     time_ctx.clearRect(0, 0, timer_disp_canvas.width, timer_disp_canvas.height);
@@ -190,7 +199,7 @@ function playerJoin(self, name, id, score, rank) {
 
 
 
-        console.log("self: " + self + " adding player[" + name + ", " + id + "] to player panel");
+        log("self: " + self + " adding player[" + name + ", " + id + "] to player panel");
         player_panel.innerHTML +=
             "<div id=\"" + id + "\" class=\"player_" + player_toggle + "\">\
             <div class=\"rank\">#" + rank + "</div>\
@@ -204,12 +213,12 @@ function playerJoin(self, name, id, score, rank) {
         else
             player_toggle = 0;
     } else
-        console.log("we've hit a race condition scenario!");
+        log("we've hit a race condition scenario!");
 
 }
 
 function playerLeft(name, id) {
-    console.log("removing player[" + name + ", " + id + "] from player panel");
+    log("removing player[" + name + ", " + id + "] from player panel");
     // Removes an element from the document
     var element = document.getElementById(id);
     element.parentNode.removeChild(element);
@@ -264,7 +273,7 @@ function display_end_of_round(client_data, word) {
 }
 
 function timer_blank_info(current_time, drawer, blanks, word) {
-    console.log("updating timer info");
+    log("updating timer info");
     timer_time = Math.round(current_time / 1000);
     update_timer();
     timer_tick_handle = setInterval(update_timer, 1000);

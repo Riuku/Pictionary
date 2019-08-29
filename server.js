@@ -59,7 +59,7 @@ io.on('connection', function (socket) {
     else if (decoded[0] == "dconn")
       disconnect_client(socket, rest);
     else if (decoded[0] == "imgData") {
-      broadcast_image(JSON.parse(rest));
+      broadcast_image(JSON.parse(rest), socket.id);
     }
     else if (decoded[0] == "clr_cvs")
       send_clear();
@@ -139,15 +139,26 @@ function disconnect_client(socket, client_id) {
 
 }
 
-function broadcast_image(json) {
-  var type = json.img_type;
-  var start = json.start;
-  var end = json.end;
-  var color = json.color;
-  var width = json.width;
+function broadcast_image(json, source_client_id) {
+  
   canvas_history.push(json);
-  //log("broadcasting to clients: type:imgData img_type:" + type + " start: {" + start.x + ", " + start.y + "} end: {" + end.x + ", " + end.y + "} color: " + color + " width: " + width);
-  io.emit('broadcast', { type: "imgData", img_type: type, start: start, end: end, color: color, width: width });
+  var type = json.img_type;
+  if (type != "fill")
+  {
+    var start = json.start;
+    var end = json.end;
+    var color = json.color;
+    var width = json.width;
+    
+    //log("broadcasting to clients: type:imgData img_type:" + type + " start: {" + start.x + ", " + start.y + "} end: {" + end.x + ", " + end.y + "} color: " + color + " width: " + width);
+    io.emit('broadcast', { source: source_client_id, type: "imgData", img_type: type, start: start, end: end, color: color, width: width });
+  
+  } else
+  {
+    log('sending fill');
+    io.emit('broadcast', { source: source_client_id, type: "imgData", img_type: type, buf:json.buf, dx:json.dx, dy:json.dy, w:json.w, h:json.h});
+    
+  }
 }
 
 function send_clear() {
